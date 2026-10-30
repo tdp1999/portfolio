@@ -38,7 +38,7 @@ Tiền tố ID theo `ids-and-references.md` của ctx plugin, dùng chung cho m�
 | `DT-n` | Decision table | [[#Test design]] |
 | `ST-n` | State transition table | [[#Test design]] |
 | `SR-n` | Convention của project | `.context/style-review.md` |
-| bảng tra `J4`, `B` | Mục của bảng tra checklist | `learning/workflow/bang-tra.md` |
+| bảng tra `J4`, `B` | Mục của bảng tra checklist | `claude-code-ctx/plugins/ctx/checklist/lookup.md` |
 
 ## E0 · Questions · mọi phase
 
@@ -231,7 +231,7 @@ Chỉ thêm bảng mới, không đụng dữ liệu cũ. Rollback: drop 2 bản
 
 Loại ticket: tính năng mới (bảng tra J1). Owner chốt từng flow, màn hình và field; chỗ nào sai thì sửa hoặc xóa. Flow vẽ bằng Mermaid; trình đọc không vẽ Mermaid thì đọc khối code như danh sách bước.
 
-Mã J1, J4, J6 là các mục của bảng tra checklist (`learning/workflow/bang-tra.md`, mục J "Flow, màn hình và trạng thái"), không nằm trong epic này.
+Mã J1, J4, J6 là các mục của bảng tra checklist (`claude-code-ctx/plugins/ctx/checklist/lookup.md`, mục J "Flow, màn hình và trạng thái"), không nằm trong epic này.
 
 ### Màn hình
 

@@ -5,7 +5,7 @@ import type { ChecklistDocContent, ChecklistRunBody } from '@portfolio/shared/ty
 export interface ChecklistDocProps {
   id: string;
   kind: ChecklistDocKind;
-  /** The file stem: `checklist-size-l`, `bang-tra`, `portfolio`. */
+  /** A lane's manifest slug (`size-l`), the lookup file stem (`lookup`), or an old profile's stem (`portfolio`). */
   slug: string;
   title: string;
   content: ChecklistDocContent;
@@ -16,7 +16,7 @@ export interface ChecklistDocProps {
   updatedAt: Date;
 }
 
-/** A file from a push, after parsing. */
+/** A file from the checklist source, after parsing. */
 export interface ParsedChecklistFile {
   kind: ChecklistDocKind;
   slug: string;

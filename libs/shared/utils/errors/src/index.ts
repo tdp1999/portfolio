@@ -10,6 +10,7 @@ export {
   ConflictError,
   MethodNotAllowedError,
   InternalServerError,
+  ServiceUnavailableError,
 } from './lib/domain.error';
 export type { DomainErrorPayload } from './lib/domain.error';
 export { InfrastructureError, DatabaseError, ExternalServiceError } from './lib/infrastructure.error';

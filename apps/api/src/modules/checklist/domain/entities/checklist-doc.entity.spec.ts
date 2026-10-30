@@ -9,7 +9,13 @@ describe('ChecklistDoc', () => {
       expect(doc.resync(parsedFile())).toBeNull();
     });
 
-    it('should bring an archived doc back live when its file is pushed again unchanged', () => {
+    it('should take the new title when only the manifest renamed the lane', () => {
+      const doc = ChecklistDoc.create(parsedFile());
+
+      expect(doc.resync(parsedFile({ title: 'Size L' }))?.title).toBe('Size L');
+    });
+
+    it('should bring an archived doc back live when its file is read again unchanged', () => {
       const archived = ChecklistDoc.create(parsedFile()).archive();
 
       const revived = archived?.resync(parsedFile());

@@ -1185,8 +1185,8 @@ model AiUsageRecord {
 }
 
 // ─── Checklist ──────────────────────────────────────────────────────────────
-// The Owner's work checklists, authored as markdown in the workflow folder and synced here by
-// `pnpm checklist:push`. Runs are worked on the landing site at /checklist (Owner-only).
+// The Owner's work checklists, authored as markdown in the ctx plugin repo and refreshed here from
+// its raw URL. Runs are worked on the landing site at /checklist (Owner-only).
 
 enum ChecklistDocKind {
   TEMPLATE

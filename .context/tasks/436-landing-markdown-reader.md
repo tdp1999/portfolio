@@ -48,7 +48,7 @@ Readable in one place: `ReaderFilePolicy` (rules 1-4) and the sync command (rule
 ## Technical Notes
 
 - **Reuse map** (copy the pattern unless noted):
-  - Push script: `apps/api/scripts/checklist-push.ts` → `apps/api/scripts/reader-push.ts`. Env `READER_SYNC_TOKEN`, `READER_API_URL`, `READER_DIR` (default `~/Code/personal/learning/reader`).
+  - Push script: `apps/api/scripts/checklist-push.ts` → `apps/api/scripts/reader-push.ts`. The checklist files were removed when the checklist moved to the plugin repo; read them from git history (`git log --diff-filter=D -- apps/api/scripts/checklist-push.ts`). Env `READER_SYNC_TOKEN`, `READER_API_URL`, `READER_DIR` (default `~/Code/personal/learning/reader`).
   - Token: `checklist-sync.config.ts` + `ChecklistSyncTokenGuard` → `READER_SYNC_TOKEN_HASH` (hex SHA-256; unset answers 401, never fails the boot). The Owner sets it on Railway; document the hash command in the progress log.
   - API module: same layering as `apps/api/src/modules/checklist/` (CQRS commands/queries, presenter, mapper, repository port). Controller guarded by `JwtAccessGuard` + `RoleGuard` + `@Roles(['ADMIN'])`; sync controller by `ThrottlerGuard` + token guard.
   - Schema: `ReaderDoc` (`id`, `path` unique, `title`, `markdown`, `sourceHash`, `archivedAt`, timestamps) → `reader_docs`, through the `prisma-migrate` skill.

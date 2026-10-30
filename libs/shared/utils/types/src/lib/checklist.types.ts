@@ -30,8 +30,16 @@ export interface ChecklistProse {
 export interface ChecklistTask {
   kind: 'task';
   id: string;
-  /** Inline markdown. */
+  /** The item's number in its lane ("5.1c"). Format 2 only: an old run's rows and a row the Owner added have none. */
+  sn?: string;
+  /** Inline markdown: the title in format 2, the whole "Việc" cell in format 1. */
   text: string;
+  /** Format 2: the one-sentence description under the title. */
+  description?: string;
+  /** Format 2: the content list, one inline-markdown line per item. */
+  items?: string[];
+  /** Format 2: the playbook has an entry for this item (`Claude: ⚙ <SN>`). */
+  claude?: boolean;
   refs: ChecklistRef[];
   /** "Ai làm" cell, as written. Empty for a row the Owner added. */
   doer: string;
@@ -45,7 +53,9 @@ export interface ChecklistTask {
 export interface ChecklistGroup {
   kind: 'group';
   id: string;
+  sn?: string;
   text: string;
+  description?: string;
   refs: ChecklistRef[];
   note: string;
   children: ChecklistTask[];
@@ -127,8 +137,8 @@ export interface ChecklistRunDetail extends ChecklistRunSummary {
   version: number;
 }
 
-/** What `POST /checklist/sync` did, per slug. */
-export interface ChecklistSyncResult {
+/** What `POST /checklist/refresh` did, per slug. */
+export interface ChecklistRefreshResult {
   created: string[];
   updated: string[];
   unchanged: string[];

@@ -7,13 +7,11 @@ import { UserModule } from '../user';
 import {
   CreateChecklistRunHandler,
   DeleteChecklistRunHandler,
+  RefreshChecklistDocsHandler,
   SaveChecklistRunBodyHandler,
-  SyncChecklistDocsHandler,
   UpdateChecklistRunHandler,
 } from './application/commands';
-import { CHECKLIST_SYNC_CONFIG, loadChecklistSyncConfig } from './application/checklist-sync.config';
-import { CHECKLIST_DOC_REPOSITORY, CHECKLIST_RUN_REPOSITORY } from './application/checklist.token';
-import { ChecklistSyncTokenGuard } from './application/guards/checklist-sync-token.guard';
+import { CHECKLIST_DOC_REPOSITORY, CHECKLIST_RUN_REPOSITORY, CHECKLIST_SOURCE } from './application/checklist.token';
 import {
   GetChecklistDocHandler,
   GetChecklistRunHandler,
@@ -22,11 +20,11 @@ import {
 } from './application/queries';
 import { ChecklistDocRepository } from './infrastructure/repositories/checklist-doc.repository';
 import { ChecklistRunRepository } from './infrastructure/repositories/checklist-run.repository';
+import { createChecklistSource } from './infrastructure/sources/checklist-source.factory';
 import { ChecklistController } from './presentation/checklist.controller';
-import { ChecklistSyncController } from './presentation/checklist-sync.controller';
 
 const commandHandlers = [
-  SyncChecklistDocsHandler,
+  RefreshChecklistDocsHandler,
   CreateChecklistRunHandler,
   SaveChecklistRunBodyHandler,
   UpdateChecklistRunHandler,
@@ -41,12 +39,11 @@ const queryHandlers = [
 
 @Module({
   imports: [CqrsModule, forwardRef(() => AuthModule), forwardRef(() => UserModule)],
-  controllers: [ChecklistController, ChecklistSyncController],
+  controllers: [ChecklistController],
   providers: [
     { provide: CHECKLIST_DOC_REPOSITORY, useClass: ChecklistDocRepository },
     { provide: CHECKLIST_RUN_REPOSITORY, useClass: ChecklistRunRepository },
-    { provide: CHECKLIST_SYNC_CONFIG, useFactory: () => loadChecklistSyncConfig() },
-    ChecklistSyncTokenGuard,
+    { provide: CHECKLIST_SOURCE, useFactory: () => createChecklistSource() },
     ...commandHandlers,
     ...queryHandlers,
   ],

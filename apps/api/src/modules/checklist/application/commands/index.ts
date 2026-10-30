@@ -1,4 +1,4 @@
-export * from './sync-docs.command';
+export * from './refresh-docs.command';
 export * from './create-run.command';
 export * from './save-run-body.command';
 export * from './update-run.command';

@@ -161,3 +161,15 @@ export const InternalServerError = (message: string, options: ErrorOptions, data
     options,
   });
 };
+
+// 503: a service the request needs cannot be reached. Unlike an infrastructure error, the message reaches the client.
+export const ServiceUnavailableError = (message: string, options: ErrorOptions, data?: unknown) => {
+  return DomainError.fromJSON({
+    statusCode: 503,
+    errorCode: options.errorCode,
+    error: 'Service Unavailable',
+    message,
+    data,
+    options,
+  });
+};

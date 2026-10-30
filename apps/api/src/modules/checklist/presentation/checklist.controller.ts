@@ -19,6 +19,7 @@ import { RoleGuard, Roles } from '../../auth/application/guards/role.guard';
 import {
   CreateChecklistRunCommand,
   DeleteChecklistRunCommand,
+  RefreshChecklistDocsCommand,
   SaveChecklistRunBodyCommand,
   UpdateChecklistRunCommand,
 } from '../application/commands';
@@ -42,6 +43,12 @@ export class ChecklistController {
   @Get('docs')
   async listDocs(@Query() query: unknown) {
     return await this.queryBus.execute(new ListChecklistDocsQuery(query));
+  }
+
+  /** "Update checklist": read the checklist source now, whatever the last refresh. */
+  @Post('refresh')
+  async refreshDocs() {
+    return await this.commandBus.execute(new RefreshChecklistDocsCommand(true));
   }
 
   @Get('docs/:kind/:slug')

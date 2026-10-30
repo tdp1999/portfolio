@@ -15,23 +15,26 @@ import { ChecklistDoc } from './checklist-doc.entity';
 
 /**
  * One working copy of a template for one ticket. The body is copied at creation and then belongs
- * to the run alone: pushing the template again never touches it (CHK-001).
+ * to the run alone: refreshing the template never touches it (CHK-001).
  */
 export class ChecklistRun {
   private constructor(private readonly props: ChecklistRunProps) {}
 
   // --- Factory Methods ---
 
-  /** Only a live template starts a run, tied to a live project profile (CHK-002). */
-  static create(name: string, template: ChecklistDoc, project: ChecklistDoc): ChecklistRun {
-    if (template.kind !== ChecklistDocKind.TEMPLATE || project.kind !== ChecklistDocKind.PROJECT) {
-      throw BadRequestError('A run needs a template and a project profile', {
+  /**
+   * Only a live template starts a run (CHK-002). The project is a name the Owner types: its profile
+   * lives in that project's repo (`.context/checklist-profile.md`), not here.
+   */
+  static create(name: string, template: ChecklistDoc, project: string): ChecklistRun {
+    if (template.kind !== ChecklistDocKind.TEMPLATE) {
+      throw BadRequestError('A run needs a template', {
         errorCode: ChecklistErrorCode.INVALID_INPUT,
         layer: ErrorLayer.DOMAIN,
       });
     }
-    if (template.isArchived || project.isArchived) {
-      throw BadRequestError('Archived docs cannot start a run', {
+    if (template.isArchived) {
+      throw BadRequestError('An archived template cannot start a run', {
         errorCode: ChecklistErrorCode.DOC_ARCHIVED,
         layer: ErrorLayer.DOMAIN,
       });
@@ -42,7 +45,7 @@ export class ChecklistRun {
       name,
       templateSlug: template.slug,
       templateTitle: template.title,
-      projectSlug: project.slug,
+      projectSlug: project,
       status: ChecklistRunStatus.ACTIVE,
       body: ChecklistRun.freshBody(template.content as ChecklistTemplateContent),
       version: 1,

@@ -13,24 +13,16 @@ pnpm dev                  # Run both FE & BE in parallel
 The `/ddl` route on the landing app displays all UI components for visual testing.
 Start the landing app and navigate to `http://localhost:4200/ddl`.
 
-### Checklist push
+### Checklist refresh
 
-Sends the workflow markdown (`checklist-size-*.md`, `bang-tra.md`, `projects/*.md`) to the checklist sync route. Runs already made are never changed; a file that is gone is archived.
+The checklist lanes and the lookup table live in the public plugin repo `tdp1999/claude-code-ctx`, folder `plugins/ctx/checklist/`. The API reads `manifest.json` there over the raw URL, then each file it lists. No token is needed.
 
-```bash
-CHECKLIST_SYNC_TOKEN=<token> pnpm checklist:push                       # local API
-CHECKLIST_SYNC_TOKEN=<token> CHECKLIST_API_URL=https://dashboard-api.thunderphong.com pnpm checklist:push
-# optional: CHECKLIST_WORKFLOW_DIR (default ~/Code/personal/learning/workflow)
-```
+- If the last refresh is older than 10 minutes, the docs list starts a refresh in the background and answers from the stored copy. After a failed refresh, the next one may start after 1 minute.
+- The "Update checklist" button on `/checklist/templates` calls `POST /api/checklist/refresh` and waits for the result. It shows the error if a file cannot be read or parsed. The current docs stay in that case.
+- GitHub caches raw files for about 5 minutes. If you press the button right after a push, it can still read the old file and say nothing changed. Press it again a few minutes later.
+- To edit lanes locally and see them without a push, set `CHECKLIST_SOURCE_DIR` to the local checklist folder. It wins over `CHECKLIST_SOURCE_URL`.
 
-Prod shortcut: `pnpm checklist:push:prod` sets the prod URL and reads `CHECKLIST_SYNC_TOKEN` from `~/Code/personal/learning/.env.checklist.prod` (gitignored, `chmod 600`). A token already set in the shell wins over the file.
-
-One-time token setup (one token per environment):
-
-```bash
-TOKEN=$(openssl rand -hex 32); echo "token: $TOKEN"
-echo -n "$TOKEN" | shasum -a 256 | cut -d' ' -f1   # → CHECKLIST_SYNC_TOKEN_HASH on the API (local env / Railway)
-```
+Runs already made are never changed. A lane that left the manifest is archived.
 
 ## Build
 

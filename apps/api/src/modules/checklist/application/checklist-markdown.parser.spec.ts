@@ -77,6 +77,147 @@ describe('ChecklistMarkdownParser', () => {
     });
   });
 
+  describe('parseTemplate() with format 2', () => {
+    const LANE_V2 = [
+      '<!-- format: 2 -->',
+      '# Checklist size L',
+      '',
+      'Intro tra A.',
+      '',
+      '## 5. Implementation | Developer',
+      '',
+      '**Qua phase khi:** Máy báo xanh.',
+      '',
+      '**Đầu ra:** code và test.',
+      '',
+      '### 5.1 Làm từng slice',
+      '',
+      'Mỗi slice đi qua ba bước.',
+      '',
+      '#### 5.1c Viết code cho slice',
+      'Ai làm: Claude, session mới soạn; Owner chốt · Ai kiểm: ⚙ review-round; Owner chốt',
+      'Claude: ⚙ 5.1c',
+      '',
+      'Code chỉ dựa vào spec và test của 5.1b.',
+      '',
+      '- Đầu ra: các test của 5.1b xanh.',
+      '- Nếu slice chạm quyền, R2 thêm góc bảo mật 📁 §5',
+      '',
+      'Ref: tra K, tra L',
+      '',
+      '### 5.2 Chạy check của máy',
+      'Ai làm: Máy · Ai kiểm: Owner xem output',
+      '',
+      'Máy chạy type check, lint, test và build.',
+      '',
+      '---',
+      '',
+      'Gặp bug ở bất kỳ phase nào: xem tra E.',
+    ].join('\n');
+
+    it('should read an item heading as SN, title, roles, description, content list and refs', () => {
+      const { content } = ChecklistMarkdownParser.parseTemplate(LANE_V2, 'lanes/size-l.md');
+
+      const [group, check] = content.phases[0].rows;
+      expect(group).toMatchObject({
+        kind: 'group',
+        sn: '5.1',
+        text: 'Làm từng slice',
+        description: 'Mỗi slice đi qua ba bước.',
+      });
+      expect((group as ChecklistGroup).children).toEqual([
+        {
+          kind: 'task',
+          id: expect.any(String),
+          sn: '5.1c',
+          text: 'Viết code cho slice',
+          description: 'Code chỉ dựa vào spec và test của 5.1b.',
+          items: ['Đầu ra: các test của 5.1b xanh.', 'Nếu slice chạm quyền, R2 thêm góc bảo mật 📁 §5'],
+          claude: true,
+          doer: 'Claude, session mới soạn; Owner chốt',
+          checker: '⚙ review-round; Owner chốt',
+          refs: [
+            { kind: 'project', key: '5' },
+            { kind: 'lookup', key: 'K' },
+            { kind: 'lookup', key: 'L' },
+          ],
+          state: 'todo',
+          note: '',
+        },
+      ]);
+      expect(check).toMatchObject({ kind: 'task', sn: '5.2', claude: false, items: [], doer: 'Máy' });
+    });
+
+    it('should read the gate, keep the output line as the phase note, and read the footer after ---', () => {
+      const { title, content } = ChecklistMarkdownParser.parseTemplate(LANE_V2, 'lanes/size-l.md');
+
+      expect(title).toBe('Checklist size L');
+      expect(content.intro.markdown).toBe('Intro tra A.');
+      expect(content.phases[0]).toMatchObject({ number: 5, name: 'Implementation', role: 'Developer' });
+      expect(content.phases[0].gate?.markdown).toBe('Máy báo xanh.');
+      expect(content.phases[0].note?.markdown).toBe('**Đầu ra:** code và test.');
+      expect(content.footer).toEqual({
+        markdown: 'Gặp bug ở bất kỳ phase nào: xem tra E.',
+        refs: [{ kind: 'lookup', key: 'E' }],
+      });
+    });
+
+    it('should give every row a unique id across groups and phases', () => {
+      const { content } = ChecklistMarkdownParser.parseTemplate(LANE_V2, 'lanes/size-l.md');
+
+      const [group, check] = content.phases[0].rows;
+      const ids = [group.id, ...(group as ChecklistGroup).children.map((c) => c.id), check.id];
+      expect(new Set(ids).size).toBe(ids.length);
+    });
+
+    it.each([
+      ['an unknown format version', LANE_V2.replace('format: 2', 'format: 9'), /format 9 is not supported/],
+      [
+        'a format line that is not a number',
+        LANE_V2.replace('format: 2', 'format: two'),
+        /format two is not supported/,
+      ],
+      [
+        'a child item with no group above it',
+        '<!-- format: 2 -->\n# L\n\n## 1. A | B\n\n#### 1.1a Làm\nAi làm: Owner · Ai kiểm: —\n\nMột câu.',
+        /:6: "####" item has no group above it/,
+      ],
+      [
+        'a group with no child item',
+        '<!-- format: 2 -->\n# L\n\n## 1. A | B\n\n### 1.1 Nhóm\n\nMô tả.\n\n### 1.2 Làm\nAi làm: Owner · Ai kiểm: —\n\nMột câu.',
+        /:6: item "1.1" has no "Ai làm:" line and no child item/,
+      ],
+      [
+        'a group with a list or a "Claude:" line, which a group never shows',
+        '<!-- format: 2 -->\n# L\n\n## 1. A | B\n\n### 1.1 Nhóm\nClaude: ⚙ 1.1\n\n#### 1.1a Làm\nAi làm: Owner · Ai kiểm: —\n\nMột câu.',
+        /:6: group "1.1" cannot have a "Claude:" line or a list/,
+      ],
+      [
+        'a prose line after the list',
+        '<!-- format: 2 -->\n# L\n\n## 1. A | B\n\n### 1.1 Làm\nAi làm: Owner · Ai kiểm: —\n\nMột câu.\n\n- Một ý.\n\nCâu thứ hai.',
+        /:13: item "1.1" has a line after its list that is not a list item or "Ref:"/,
+      ],
+      [
+        'a "Claude:" line without the cog and SN',
+        '<!-- format: 2 -->\n# L\n\n## 1. A | B\n\n### 1.1 Làm\nAi làm: Owner · Ai kiểm: —\nClaude: 1.1\n\nMột câu.',
+        /:8: "Claude:" line must look like "Claude: ⚙ 1.2"/,
+      ],
+      [
+        'an item heading without an SN',
+        '<!-- format: 2 -->\n# L\n\n## 1. A | B\n\n### Làm\nAi làm: Owner · Ai kiểm: —\n\nMột câu.',
+        /:6: item heading must look like "### 1.2 Title"/,
+      ],
+    ])('should reject the file when it has %s', (_case, markdown, message) => {
+      expect(() => ChecklistMarkdownParser.parseTemplate(markdown, 'x.md')).toThrow(message);
+    });
+
+    it('should still read a file without a format line as the table format', () => {
+      const { content } = ChecklistMarkdownParser.parseTemplate(SIZE_L, 'checklist-size-l.md');
+
+      expect(content.phases).toHaveLength(8);
+    });
+  });
+
   describe('extractRefs()', () => {
     it('should extract a long marker name that still fits the saved ref schema', () => {
       const longest = `r${'e'.repeat(MAX_REF_KEY - 1)}`;
@@ -131,6 +272,21 @@ describe('ChecklistMarkdownParser', () => {
         { key: '1', title: 'Người dùng', markdown: 'Ai dùng.' },
         { key: '10', title: 'Tài liệu', markdown: 'Ở đâu.' },
       ]);
+    });
+
+    it('should skip the format line of a format 2 lookup table', () => {
+      const markdown = '<!-- format: 2 -->\n# Lookup\n\nChỉ mở khi cần.\n\n## A. Chọn size\n\nTheo rủi ro.';
+
+      const { title, content } = ChecklistMarkdownParser.parseSectioned(markdown, 'lookup.md');
+
+      expect(title).toBe('Lookup');
+      expect(content.intro).toBe('Chỉ mở khi cần.');
+    });
+
+    it('should reject a lookup table with an unknown format version', () => {
+      const parse = () => ChecklistMarkdownParser.parseSectioned('<!-- format: 3 -->\n# Lookup\n', 'lookup.md');
+
+      expect(parse).toThrow(/format 3 is not supported/);
     });
 
     it('should reject a section heading without a key', () => {

@@ -57,7 +57,7 @@
 | MediaFolder | A named category for organizing uploaded Media assets (e.g., skill, avatar, og-image, resume, general). Assigned at upload time, immutable. | Value Object |
 | Home (root page) | The landing app's entry route `/` — the only page that owns the full marketing hero (portrait, large display heading, hero CTAs, marquee sections). Composition rules differ from feature pages: home does NOT use the canonical sub-page header (breadcrumb + page-hero); it has its own hero composition. | UI Concept |
 | Feature page (subpage) | Any non-home landing route: `/about`, `/projects`, `/projects/:slug`, `/blog`, `/blog/:slug`, `/uses`, `/contact`, `/colophon`, `/privacy`, `/terms`. All feature pages SHARE one canonical structure: `<article>` > `<header>` (breadcrumb + `landing-page-hero` + optional meta strip) > one-or-more `<section aria-labelledby>` body blocks > optional `<footer>` (CTA / last-updated). Variants are additive inside the header slot, never structural deviations. | UI Concept |
-| ChecklistDoc | A parsed copy of one markdown file from the Owner's workflow folder, keyed by its file stem. Three kinds: Template (a lane checklist: phases, gate lines, rows with doer and checker), Lookup (the `bang-tra` table, sections A..H) and Project (a project profile, sections §1..§10). Authored in markdown, never on the web. | Entity |
+| ChecklistDoc | A parsed copy of one markdown file of the checklist folder in the ctx plugin repo. Three kinds: Template (a lane: phases, gate lines, items with SN, title, description, list, doer and checker; slug from the manifest, e.g. `size-l`), Lookup (the `lookup` table, sections A..L) and Project (an old project profile, kept only for old runs; new profiles live in each project's `.context/checklist-profile.md`). Authored in markdown, never on the web. | Entity |
 | ChecklistRun | One working copy of a Template for one ticket, tied to one Project doc. Holds its own rows, so it is a snapshot of the Template at creation. Status: active, done, archived. | Aggregate |
 | ChecklistRow | One line of a ChecklistRun: a task, or a group with child tasks. Carries text, doer, checker, a plain-text note and a RowState. | Entity |
 | RowState | todo, done or skipped. Skipped means done without doing it, and counts as complete. | Value Object |
@@ -296,26 +296,29 @@
   - Lease expired and another worker claimed it: the late result is rejected
 - **End states:** Brief readable in Console, each claim linking to its item Detail page; or a failed Auto brief showing why
 
-### Sync Checklist Docs
-- **Trigger:** Owner runs `pnpm checklist:push` after editing the workflow markdown
-- **Actors:** Owner, push script (machine client)
+### Refresh Checklist Docs
+- **Trigger:** the docs list is asked for and the last refresh is older than 10 minutes (1 minute after a failed one), or the Owner presses "Update checklist". The list does not wait for an automatic refresh
+- **Actors:** Owner, API
 - **Happy path:**
-  1. Script sends every workflow file (lane checklists, lookup table, project profiles) with the checklist machine token
-  2. System parses each file and upserts it as a ChecklistDoc by its stem
-  3. A doc whose file is no longer sent is archived
+  1. System reads `manifest.json` from the checklist source (the plugin repo's raw URL, or `CHECKLIST_SOURCE_DIR` locally)
+  2. System reads and parses every lane and the lookup table the manifest lists
+  3. System upserts each lane by its manifest slug and title, and the lookup table by its file stem
+  4. A lane or lookup table that left the manifest is archived. Old project profiles stay as they are
 - **Error paths:**
-  - Invalid or missing machine token: rejected, nothing changes
-  - A file fails to parse: the whole push is rejected with that file's path, nothing changes
-- **End states:** Docs match the folder. Existing ChecklistRuns are untouched
+  - The source cannot be read: nothing changes; the button shows the error, an automatic refresh only logs it
+  - The manifest or a file has an unknown format version: nothing changes, the error names the file
+  - A file fails to parse: nothing changes, the error names the file and line
+  - A lane holds an item a run could not save (too long, too many list lines): nothing changes, the error names the file
+- **End states:** Docs match the manifest. Existing ChecklistRuns are untouched
 
 ### Work a Checklist Run
 - **Trigger:** Owner opens `/checklist` on the landing site
 - **Actors:** Owner (authenticated with the console account)
 - **Happy path:**
-  1. Owner creates a run: name, a Template, a Project
+  1. Owner creates a run: name, a Template, and a project name typed as free text
   2. System copies the Template's rows into the run
   3. Owner ticks, skips, reorders (a group moves with its children), notes, adds, edits and deletes rows; each change saves
-  4. Owner opens `tra X` / `📁 §N` references, read live from the Lookup and Project docs
+  4. Owner opens `tra X` references, read live from the Lookup doc. A `📁 §N` reference opens the old Project doc for an old run (its rows have no SN); for a run made from a format 2 lane it names section N of that project's `.context/checklist-profile.md`, even when an old Project doc has the same name. An old run's `tra X` refs open `bang-tra` until the first refresh saves `lookup`
 - **Error paths:**
   - Not signed in: login form, no run data in the page
   - Save with a stale version (another tab saved first): rejected, Owner reloads

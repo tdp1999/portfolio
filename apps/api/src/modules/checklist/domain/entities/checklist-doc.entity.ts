@@ -6,8 +6,8 @@ import type { ChecklistDocContent } from '@portfolio/shared/types';
 import { ChecklistDocProps, ParsedChecklistFile } from '../checklist.types';
 
 /**
- * A parsed workflow markdown file. The markdown is the source of truth: a push overwrites the
- * doc, and a file missing from a push archives it (CHK-002). Runs never point at a doc row, so
+ * A parsed checklist markdown file. The markdown is the source of truth: a refresh overwrites the
+ * doc, and a file that left the manifest is archived (CHK-002). Runs never point at a doc row, so
  * neither ever reaches a run (CHK-001).
  */
 export class ChecklistDoc {
@@ -69,11 +69,12 @@ export class ChecklistDoc {
   // --- Rules ---
 
   /**
-   * The file was pushed again. Null when nothing changed (same markdown, still live), so the
-   * push leaves the row alone; otherwise the new content, live again if it had been archived.
+   * The file was read again. Null when nothing changed (same markdown and title, still live), so
+   * the refresh leaves the row alone; otherwise the new content, live again if it had been archived.
    */
   resync(file: ParsedChecklistFile): ChecklistDoc | null {
-    if (file.sourceHash === this.props.sourceHash && !this.isArchived) return null;
+    const same = file.sourceHash === this.props.sourceHash && file.title === this.props.title;
+    if (same && !this.isArchived) return null;
     return new ChecklistDoc({
       ...this.props,
       title: file.title,
@@ -84,7 +85,7 @@ export class ChecklistDoc {
     });
   }
 
-  /** The file was not in the push. Already archived: nothing to do. */
+  /** The file left the manifest. Already archived: nothing to do. */
   archive(): ChecklistDoc | null {
     if (this.isArchived) return null;
     const now = TemporalValue.now();

@@ -1,12 +1,8 @@
-import { ChecklistDocKind } from '@prisma/client';
-
 import type { ChecklistGroup, ChecklistTemplateContent } from '@portfolio/shared/types';
 
 import { parsedFile, task, templateContent } from '../__fixtures__/checklist.fixture';
 import { ChecklistDoc } from './checklist-doc.entity';
 import { ChecklistRun } from './checklist-run.entity';
-
-const project = () => ChecklistDoc.create(parsedFile({ kind: ChecklistDocKind.PROJECT, slug: 'portfolio' }));
 
 describe('ChecklistRun', () => {
   describe('create()', () => {
@@ -15,20 +11,18 @@ describe('ChecklistRun', () => {
       content.phases[0].rows[0] = task('r1', { state: 'done', note: 'stale' });
       const template = ChecklistDoc.create(parsedFile({ content }));
 
-      const run = ChecklistRun.create('CIMB-123', template, project());
+      const run = ChecklistRun.create('CIMB-123', template, 'portfolio');
 
       const [first, group] = run.body.phases[0].rows;
       expect(first).toMatchObject({ state: 'todo', note: '' });
       expect((group as ChecklistGroup).children.every((child) => child.state === 'todo')).toBe(true);
     });
 
-    it.each([
-      ['template', () => ChecklistDoc.create(parsedFile()).archive() as ChecklistDoc, project],
-      ['project', () => ChecklistDoc.create(parsedFile()), () => project().archive() as ChecklistDoc],
-    ])('should refuse an archived %s (CHK-002)', (_case, template, profile) => {
+    it('should refuse an archived template (CHK-002)', () => {
+      const template = ChecklistDoc.create(parsedFile()).archive() as ChecklistDoc;
       const thrown = (() => {
         try {
-          ChecklistRun.create('CIMB-123', template(), profile());
+          ChecklistRun.create('CIMB-123', template, 'portfolio');
         } catch (error) {
           return error;
         }
@@ -40,7 +34,7 @@ describe('ChecklistRun', () => {
   });
 
   describe('replaceBody()', () => {
-    const run = () => ChecklistRun.create('CIMB-123', ChecklistDoc.create(parsedFile()), project());
+    const run = () => ChecklistRun.create('CIMB-123', ChecklistDoc.create(parsedFile()), 'portfolio');
 
     it('should refuse a save based on an older version', () => {
       const saved = run().replaceBody(templateContent(), 1);
@@ -67,7 +61,7 @@ describe('ChecklistRun', () => {
           children: [task('r3', { state: 'skipped' }), task('r4')],
         },
       ];
-      const run = ChecklistRun.create('CIMB-123', ChecklistDoc.create(parsedFile()), project()).replaceBody(body, 1);
+      const run = ChecklistRun.create('CIMB-123', ChecklistDoc.create(parsedFile()), 'portfolio').replaceBody(body, 1);
 
       expect(run.progress).toEqual({ complete: 2, total: 3 });
     });

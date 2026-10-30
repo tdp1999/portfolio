@@ -7,6 +7,7 @@ import {
   NotFoundError,
   MethodNotAllowedError,
   InternalServerError,
+  ServiceUnavailableError,
   ValidationError,
 } from './domain.error';
 import { ErrorLayer } from './error-layer';
@@ -29,6 +30,12 @@ describe('DomainError', () => {
         status: 500,
         error: 'Internal Server Error',
         msg: 'Internal Server Error',
+      },
+      {
+        fn: ServiceUnavailableError,
+        status: 503,
+        error: 'Service Unavailable',
+        msg: 'Service Unavailable',
       },
     ])('$error should create DomainError with status $status', ({ fn, status, error, msg }) => {
       const err = fn(msg, { errorCode: 'TEST' });
