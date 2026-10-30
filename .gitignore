@@ -77,6 +77,13 @@ dist/apps/landing/bundle-report.html
 # shot-composer working dir (generated cover images)
 .shot-composer/
 
+# Motion videos (HTML animation rendered to MP4). Local only: the folder and
+# its README exist only on the author's machine.
+.motion/
+
+# Obsidian per-machine UI state (the shared vault config stays tracked)
+.context/.obsidian/workspace*.json
+
 # Local, uncommitted credential notes for the visual-feedback workflow
 # (see .context/design/workflow/visual-feedback.md)
 .context/design/workflow/*.local.md
