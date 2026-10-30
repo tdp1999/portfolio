@@ -1,7 +1,7 @@
 @use 'base/breakpoints' as bp;
 
 // ── Frame ────────────────────────────────────────────────────────────────
-// Blog-style: the run is one 72rem column in the middle, well past the blog's
+// The run is one 96rem column in the middle, well past the blog's
 // 760px since a run is a table of task, Do and Check. The left gutter is what
 // centres it. A ref opens as a popup over the page at every width, so the run
 // never narrows.
@@ -12,7 +12,7 @@
 }
 
 .cl {
-  --cl-gutter: max(var(--container-padding), (100cqw - 72rem) / 2);
+  --cl-gutter: max(var(--container-padding), (100cqw - 96rem) / 2);
 
   // Two buttons per row at work (note, skip), four in edit mode (+ edit text, delete).
   // Task rows and the column captions both read it, so Do and Check stay aligned.
@@ -157,16 +157,17 @@
 
 // Column captions follow the same container query as the rows and line up with
 // the row grid: the text track, Do (200px), Check (240px), the action slot.
-// Left inset = phase indent (32) + row padding (8) + checkbox and gap.
+// Left inset = rows indent (24) + row padding (8) + check slot (30) + the row's column gap (16).
+// Do and Check carry the row's rule width and padding, so each caption starts where its values do.
 .cl-columns {
   display: none;
 
   @container (min-width: 880px) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 200px 240px var(--checklist-row-actions);
-    column-gap: 12px;
+    column-gap: 16px;
     margin-bottom: 8px;
-    padding: 0 8px 8px 72px;
+    padding: 0 8px 8px calc(24px + 8px + 30px + 16px);
     border-bottom: 1px solid var(--landing-border);
     color: var(--landing-text-600);
     font-family: var(--landing-font-mono);
@@ -174,6 +175,12 @@
     line-height: var(--landing-mono-sm-lh);
     letter-spacing: var(--landing-tracking-mono);
     text-transform: uppercase;
+
+    > :nth-child(2),
+    > :nth-child(3) {
+      padding-left: 12px;
+      border-left: 1px solid transparent;
+    }
   }
 }
 

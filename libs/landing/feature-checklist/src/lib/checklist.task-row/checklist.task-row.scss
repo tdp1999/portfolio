@@ -46,6 +46,9 @@
       'check text roles roles action'
       '. note note note .';
     align-items: start;
+    // No gap before an empty note row, so the role rules reach the row's bottom edge.
+    // The note keeps its own top margin.
+    row-gap: 0;
   }
 }
 
@@ -80,13 +83,21 @@
   line-height: var(--landing-body-sm-lh);
 }
 
+// Inherit the text's size: a template's title line is a <p>, which the landing base sets to body-md.
 .task-row__head {
   display: block;
   margin: 0;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 // The SN leads the title in mono, so "5.1c" reads as a number to find, not as words.
+// It is one title line tall and centres in it, so the smaller mono sits level with the title.
 .task-row__sn {
+  display: inline-flex;
+  align-items: center;
+  height: var(--task-row-line);
+  vertical-align: top;
   margin-right: 8px;
   color: var(--landing-text-500);
   font-family: var(--landing-font-mono);
@@ -180,15 +191,33 @@
 
 :host(.task-row--compact) .task-row__roles {
   @container (min-width: 880px) {
+    // Through the row's padding, so the rules of one row meet the next row's: two full column lines.
+    // A note spans under the roles, so a row with a note keeps its rules above it.
+    align-self: stretch;
+    margin-block: -8px;
     display: grid;
     grid-template-columns: 200px 240px;
     column-gap: 16px;
   }
 }
 
+:host(.task-row--compact:has(.task-row__note, .task-row__note-editor)) .task-row__roles {
+  @container (min-width: 880px) {
+    margin-bottom: 0;
+  }
+}
+
+:host(.task-row--compact:has(.task-row__note, .task-row__note-editor)) .task-row__role {
+  @container (min-width: 880px) {
+    padding-bottom: 0;
+  }
+}
+
 // A thin rule before each role column keeps Do and Check apart from the item and from each other.
 :host(.task-row--compact) .task-row__role {
   @container (min-width: 880px) {
+    // The padding cancels the roles' negative margin, so a Do or Check taller than the text keeps its space.
+    padding-block: 8px;
     padding-left: 12px;
     border-left: 1px solid var(--landing-border);
   }

@@ -21,7 +21,12 @@
   line-height: var(--landing-body-sm-lh);
 }
 
+// Centred in the title line, as a task row's SN.
 .group-row__sn {
+  display: inline-flex;
+  align-items: center;
+  height: calc(var(--landing-body-sm) * var(--landing-body-sm-lh));
+  vertical-align: top;
   margin-right: 8px;
   color: var(--landing-text-500);
   font-family: var(--landing-font-mono);

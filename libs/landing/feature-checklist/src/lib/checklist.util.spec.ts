@@ -324,7 +324,6 @@ describe('rowView', () => {
       description: 'Claude chạy review-round sau mỗi batch.',
       items: ['Hai reviewer chạy song song.', 'Owner chỉ duyệt phần 1.'],
       claude: true,
-      refLine: null,
     });
 
     expect(rowView(row)).toEqual({
@@ -335,6 +334,40 @@ describe('rowView', () => {
       claude: true,
       refLine: null,
     });
+  });
+
+  it('should join a one-item list onto the description, so a lone bullet does not take its own line', () => {
+    const row = task('a', {
+      sn: '3.2',
+      text: 'Lập danh sách màn hình',
+      description: 'Mỗi màn hình có một mã (S1, S2).',
+      items: ['Mỗi mã ghi những flow nào đi qua nó.'],
+    });
+
+    expect(rowView(row)).toMatchObject({
+      description: 'Mỗi màn hình có một mã (S1, S2). Mỗi mã ghi những flow nào đi qua nó.',
+      items: [],
+    });
+  });
+
+  it('should end the description with a full stop before it joins a lone item', () => {
+    const row = task('a', {
+      text: 'Lập danh sách',
+      description: 'Mỗi màn hình có một mã',
+      items: ['Mỗi mã ghi flow.'],
+    });
+
+    expect(rowView(row).description).toBe('Mỗi màn hình có một mã. Mỗi mã ghi flow.');
+  });
+
+  it('should drop a lone empty item rather than show an empty bullet', () => {
+    expect(rowView(task('a', { text: 'Lập danh sách', items: [''] }))).toMatchObject({ description: null, items: [] });
+  });
+
+  it('should show a lone list item as the description when the row has none', () => {
+    const row = task('a', { sn: '3.2', text: 'Lập danh sách màn hình', items: ['Mỗi mã ghi flow đi qua nó.'] });
+
+    expect(rowView(row)).toMatchObject({ description: 'Mỗi mã ghi flow đi qua nó.', items: [] });
   });
 
   it('should show a group with its SN and description and no list', () => {

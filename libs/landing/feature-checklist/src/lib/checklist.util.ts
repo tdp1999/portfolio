@@ -311,14 +311,22 @@ export function findRow(body: ChecklistRunBody, rowId: string): ChecklistRow | u
 
 /** A row's parts as the page lays them out; an old run's row has its text alone. */
 export function rowView(row: ChecklistRow): ChecklistRowView {
+  const items = row.kind === 'task' ? (row.items ?? []) : [];
+  // A lone bullet joins the description: one line of prose reads tighter than a one-item list.
+  const lone = items.length === 1 ? items[0] : null;
   return {
     sn: row.sn ?? null,
     title: row.text,
-    description: row.description || null,
-    items: row.kind === 'task' ? (row.items ?? []) : [],
+    description: [sentence(row.description), lone].filter(Boolean).join(' ') || null,
+    items: lone === null ? items : [],
     claude: row.kind === 'task' && row.claude === true,
     refLine: refLine(row),
   };
+}
+
+/** Text that ends a sentence, so a joined item does not run on from it. */
+function sentence(text: string | undefined): string | undefined {
+  return text && !/[.!?:]$/.test(text.trimEnd()) ? `${text.trimEnd()}.` : text;
 }
 
 /** A run copied from a format 2 lane: its rows have SNs, and its `📁 §N` refs name the profile in the project's repo. */
