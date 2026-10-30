@@ -1,0 +1,30 @@
+/* Khung diagram: thẻ có nền, viền, bo góc; cuộn ngang khi quá rộng */
+.markdown-rendered .mermaid,
+.markdown-source-view .mermaid {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  margin: 24px 0;
+  padding: 24px 16px;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 12px;
+}
+
+/* Canh giữa; diagram rộng hơn khung thì thu nhỏ cho vừa, không phóng to diagram nhỏ */
+.markdown-rendered .mermaid svg,
+.markdown-source-view .mermaid svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100% !important;
+  height: auto;
+}
+
+/* Thanh cuộn mảnh */
+.mermaid::-webkit-scrollbar {
+  height: 8px;
+}
+.mermaid::-webkit-scrollbar-thumb {
+  background: var(--background-modifier-border);
+  border-radius: 4px;
+}
