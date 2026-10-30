@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     # Postgres for the few DB-backed specs (`*.integration.spec.ts` that hit real SQL,
     # e.g. the Radar claim lease). Unit specs never connect.
@@ -71,7 +71,7 @@ jobs:
         run: npx nx affected -t build
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     # Shard the Playwright suite across parallel jobs. Each shard is a separate
     # runner with its own Postgres service + api/console servers, so shards never

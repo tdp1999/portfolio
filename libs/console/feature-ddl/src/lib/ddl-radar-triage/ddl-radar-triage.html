@@ -83,6 +83,7 @@
   <div class="tr-split" [style.grid-template-columns]="listWidth() + 'px 1fr'">
     <ul class="tr-list" role="listbox" aria-label="Posts">
       @for (it of visible(); track it.id) {
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- keys are handled by the keydown listener of the host element -->
         <li
           class="tr-row"
           role="option"

@@ -2,6 +2,7 @@
   <div class="triage-side">
     <ul #list class="triage-list" role="listbox" aria-label="Posts">
       @for (row of rows(); track row.id) {
+        <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- keys are handled on document (arrow keys walk the list) -->
         <li
           class="triage-row"
           role="option"
@@ -9,7 +10,7 @@
           [class.triage-row--active]="row.id === selectedId()"
           [class.triage-row--decided]="row.decided"
           [attr.aria-selected]="row.id === selectedId()"
-          (click)="select.emit(row.id)"
+          (click)="rowSelect.emit(row.id)"
         >
           @if (row.score !== null) {
             <span
@@ -211,7 +212,7 @@
           class="triage-pane__close"
           matTooltip="Close (Esc)"
           aria-label="Close the post and go back to the table"
-          (click)="close.emit()"
+          (click)="closed.emit()"
         >
           <mat-icon>close</mat-icon>
         </button>
@@ -276,7 +277,7 @@
         <mat-icon class="radar-state__icon icon-2xl">task_alt</mat-icon>
         <p class="radar-state__title">Nothing left to decide here</p>
         <p class="radar-state__body">Switch tabs or loosen a filter.</p>
-        <button mat-stroked-button type="button" (click)="close.emit()">Back to the table</button>
+        <button mat-stroked-button type="button" (click)="closed.emit()">Back to the table</button>
       </div>
     }
   </div>

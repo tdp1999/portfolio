@@ -33,6 +33,7 @@
       @if (written()) {
         <console-record-section title="Brief">
           <!-- Click handler only routes the body's own links; keyboard users activate them as normal links. -->
+          <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- the click only routes links inside the body -->
           <div class="rv-prose radar-md brief-body" [innerHTML]="b.body | markdown" (click)="onBodyClick($event)"></div>
         </console-record-section>
       } @else if (b.error) {

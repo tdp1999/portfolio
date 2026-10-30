@@ -194,10 +194,10 @@
         [total]="total()"
         [tab]="triage()"
         [busy]="deciding()"
-        (select)="onSelect($event)"
+        (rowSelect)="onSelect($event)"
         (pageStep)="onPageStep($event)"
         (decide)="onDecide($event)"
-        (close)="onClosePane()"
+        (closed)="onClosePane()"
         (notesChange)="onNotesChange($event)"
       >
         <console-paginator

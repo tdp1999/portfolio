@@ -10,7 +10,7 @@ import {
 const vnd: CurrencyPreference = { currency: 'VND', vndPerUsd: 26_000, rateUpdatedAt: null };
 const usd: CurrencyPreference = { ...vnd, currency: 'USD' };
 /** Intl puts a no-break space before ₫. */
-const plain = (s: string) => s.replace(/ /g, ' ');
+const plain = (s: string) => s.replace(/\u00a0/g, ' ');
 
 describe('formatUsd', () => {
   it.each([
