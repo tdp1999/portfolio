@@ -86,14 +86,14 @@ test.describe('Project Gallery Picker', () => {
 
     const items = picker.getGridItems();
     await items.nth(0).click();
-    await expect(picker.selectedCount).toHaveText(/1 selected/);
+    await expect(picker.selectedCount).toHaveText(/Selected \(1\)/);
     // Strings, not regexes. `toHaveText` normalizes whitespace only for a string match, and the
     // rendered label is " Insert 1 item " — so the anchored `/Insert 1 item$/` could never match
     // while still reporting a value that looks identical in the diff.
     await expect(picker.insertButton).toHaveText('Insert 1 item');
 
     await items.nth(1).click();
-    await expect(picker.selectedCount).toHaveText(/2 selected/);
+    await expect(picker.selectedCount).toHaveText(/Selected \(2\)/);
     await expect(picker.insertButton).toHaveText('Insert 2 items');
   });
 
@@ -150,7 +150,7 @@ test.describe('Project Gallery Picker', () => {
     // reopen with that item already counted rather than starting from an empty selection.
     await form.galleryTrigger.click();
     await picker.waitForOpen();
-    await expect(picker.selectedCount).toHaveText(/1 selected/);
+    await expect(picker.selectedCount).toHaveText(/Selected \(1\)/);
   });
 
   test('cancelling the gallery picker leaves the existing rows untouched', async ({ adminPage: page }) => {
