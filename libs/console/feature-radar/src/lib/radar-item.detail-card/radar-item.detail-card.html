@@ -403,6 +403,7 @@
 <!-- Facebook's reading of an image's text sits behind an icon: it is rarely worth the space. -->
 <mat-menu #ocrMenu="matMenu" xPosition="before">
   <ng-template matMenuContent let-text="text">
+    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- the click only keeps the menu open -->
     <p class="radar-ocr" (click)="$event.stopPropagation()">{{ text }}</p>
   </ng-template>
 </mat-menu>

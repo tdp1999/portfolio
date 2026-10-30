@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>{{ isRename ? 'Rename person' : 'Add person' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" [consoleServerErrorMap]="{}" (ngSubmit)="submit()">
+    <mat-form-field class="w-full">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" cdkFocusInitial />
+      <mat-error>{{ form.controls.name | formError: nameMessages }}</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button type="button" [disabled]="submitting()" (click)="submit()">
+    {{ isRename ? 'Save' : 'Add' }}
+  </button>
+</mat-dialog-actions>

@@ -118,6 +118,7 @@ export { PropertyList } from './components/record-view/property-list';
 export { Property } from './components/record-view/property';
 export { RecordEmptySections } from './components/record-view/record-empty-sections';
 export {
+  askUnsavedChanges,
   unsavedChangesGuard,
   onBeforeUnload,
   UnsavedChangesDialog,

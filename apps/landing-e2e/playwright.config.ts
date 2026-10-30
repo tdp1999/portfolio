@@ -47,7 +47,8 @@ export default defineConfig({
     },
   ],
 
-  // Run API and landing dev servers before starting the tests
+  // Run API, landing and console dev servers before starting the tests. Console serves the edit
+  // form that the medicine cabinet lookup links to (R16).
   webServer: [
     {
       command: 'pnpm nx serve api',
@@ -58,6 +59,12 @@ export default defineConfig({
     {
       command: 'pnpm nx serve landing',
       url: 'http://localhost:4200',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    },
+    {
+      command: 'pnpm nx serve console',
+      url: 'http://localhost:4300',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
     },

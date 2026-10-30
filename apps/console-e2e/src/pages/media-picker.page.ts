@@ -30,7 +30,8 @@ export class MediaPickerPage {
     // ever returns "Insert" or "Insert N items".
     this.insertButton = this.dialog.locator('.picker__footer-right').getByRole('button', { name: /^Insert/ });
     this.cancelButton = this.dialog.getByRole('button', { name: 'Cancel' });
-    this.selectedCount = this.dialog.locator('.picker__count');
+    // Multi mode shows the count in the selection rail heading, "Selected (N)".
+    this.selectedCount = this.dialog.locator('#media-picker-rail-title');
   }
 
   /**
@@ -115,7 +116,7 @@ export class MediaPickerPage {
   /** Get count of selected items */
   async getSelectedCount(): Promise<number> {
     const text = await this.selectedCount.textContent();
-    const match = text?.match(/(\d+) selected/);
+    const match = text?.match(/Selected \((\d+)\)/);
     return match ? parseInt(match[1], 10) : 0;
   }
 

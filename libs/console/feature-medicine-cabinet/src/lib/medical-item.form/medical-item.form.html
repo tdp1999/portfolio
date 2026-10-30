@@ -1,0 +1,123 @@
+<div class="item-form-page">
+  <console-spinner-overlay [loading]="loading()" />
+
+  <div class="item-form-page__header">
+    <button mat-icon-button type="button" aria-label="Back" (click)="cancel()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="text-page-title">{{ isEditMode() ? 'Edit item' : 'New item' }}</h1>
+  </div>
+
+  @if (missing()) {
+    <div class="item-form-page__missing" role="alert">
+      <p class="text-section-heading">This item no longer exists</p>
+      <button mat-flat-button type="button" (click)="leave()">Back to list</button>
+    </div>
+  } @else {
+    <form [formGroup]="form" [consoleServerErrorMap]="{}" class="item-form" (ngSubmit)="submit()">
+      <mat-form-field>
+        <mat-label>Person</mat-label>
+        <mat-select formControlName="profileId" data-testid="person-select" (selectionChange)="onPersonChange($event)">
+          @for (person of people(); track person.id) {
+            <mat-option [value]="person.id">{{ person.name }}</mat-option>
+          }
+          <mat-option [value]="addPerson">+ Add new person</mat-option>
+        </mat-select>
+        <mat-error>{{ form.controls.profileId | formError: messages.profileId }}</mat-error>
+      </mat-form-field>
+
+      <div class="item-form__kind">
+        <span class="text-stat-label">Type</span>
+        <mat-button-toggle-group formControlName="kind" aria-label="Type" hideSingleSelectionIndicator>
+          @for (k of kinds; track k) {
+            <mat-button-toggle [value]="k">{{ kindLabels[k] }}</mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </div>
+
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error>{{ form.controls.name | formError: messages.name }}</mat-error>
+      </mat-form-field>
+
+      @if (kind() === 'MEDICINE') {
+        <mat-form-field>
+          <mat-label>Active ingredients</mat-label>
+          <mat-chip-grid #ingredientGrid formControlName="activeIngredients" aria-label="Active ingredients">
+            @for (ingredient of form.controls.activeIngredients.value; track $index) {
+              <mat-chip-row (removed)="removeIngredient($index)">
+                {{ ingredient }}
+                <button matChipRemove type="button" [attr.aria-label]="'Remove ' + ingredient">
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            }
+            <input
+              placeholder="Type one, then press Enter"
+              [matChipInputFor]="ingredientGrid"
+              [matChipInputAddOnBlur]="true"
+              (matChipInputTokenEnd)="addIngredient($event)"
+            />
+          </mat-chip-grid>
+          <mat-error>{{ form.controls.activeIngredients | formError: messages.activeIngredients }}</mat-error>
+        </mat-form-field>
+
+        <div class="item-form__row">
+          <mat-form-field>
+            <mat-label>Strength</mat-label>
+            <input matInput formControlName="strength" placeholder="e.g. 500mg" />
+            <mat-error>{{ form.controls.strength | formError: messages.strength }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Dose</mat-label>
+            <input matInput formControlName="dose" placeholder="e.g. 2 tablets, 3 times a day" />
+            <mat-error>{{ form.controls.dose | formError: messages.text }}</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="item-form__row">
+          <mat-form-field>
+            <mat-label>Timing</mat-label>
+            <mat-select formControlName="timing">
+              <mat-option [value]="null">Not recorded</mat-option>
+              @for (t of timings; track t) {
+                <mat-option [value]="t">{{ timingLabels[t] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Usage</mat-label>
+            <mat-select formControlName="usageType">
+              <mat-option [value]="null">Not recorded</mat-option>
+              @for (u of usageTypes; track u) {
+                <mat-option [value]="u">{{ usageTypeLabels[u] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      }
+
+      <mat-form-field>
+        <mat-label>Purpose</mat-label>
+        <textarea matInput formControlName="purpose" rows="2"></textarea>
+        <mat-error>{{ form.controls.purpose | formError: messages.text }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Note</mat-label>
+        <textarea matInput formControlName="note" rows="4"></textarea>
+        <mat-error>{{ form.controls.note | formError: messages.text }}</mat-error>
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="packForTravel">Travel</mat-slide-toggle>
+
+      <div class="item-form__actions">
+        <button mat-button type="button" (click)="cancel()">Cancel</button>
+        <button mat-flat-button type="submit" [disabled]="submitting()">Save</button>
+      </div>
+    </form>
+  }
+</div>

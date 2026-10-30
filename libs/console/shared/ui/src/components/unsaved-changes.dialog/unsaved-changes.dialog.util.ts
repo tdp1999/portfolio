@@ -12,18 +12,7 @@ export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = async (co
 
   if (!isDirty) return true;
 
-  const dialog = inject(MatDialog);
-  const showSave = typeof component.onSaveAndContinue === 'function';
-
-  const result = await firstValueFrom(
-    dialog
-      .open<
-        UnsavedChangesDialog,
-        UnsavedChangesDialogData,
-        UnsavedChangesResult
-      >(UnsavedChangesDialog, { data: { showSave }, disableClose: true })
-      .afterClosed()
-  );
+  const result = await askUnsavedChanges(inject(MatDialog), typeof component.onSaveAndContinue === 'function');
 
   if (result === 'discard') return true;
 
@@ -34,6 +23,22 @@ export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = async (co
   // 'stay' or dialog dismissed
   return false;
 };
+
+/**
+ * Opens `UnsavedChangesDialog` and resolves with the choice, or `undefined` when it is dismissed.
+ * The guard uses it, and so does a page that leaves without the router (for example to another app).
+ */
+export function askUnsavedChanges(dialog: MatDialog, showSave: boolean): Promise<UnsavedChangesResult | undefined> {
+  return firstValueFrom(
+    dialog
+      .open<
+        UnsavedChangesDialog,
+        UnsavedChangesDialogData,
+        UnsavedChangesResult
+      >(UnsavedChangesDialog, { data: { showSave }, disableClose: true })
+      .afterClosed()
+  );
+}
 
 export function onBeforeUnload(event: BeforeUnloadEvent, isDirty: boolean): void {
   if (isDirty) {

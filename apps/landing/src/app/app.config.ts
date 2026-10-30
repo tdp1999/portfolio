@@ -1,4 +1,10 @@
-import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  isDevMode,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { appRoutes } from './app.routes';
@@ -12,6 +18,7 @@ import {
   galleryBlockRenderer,
   type CommandResult,
 } from '@portfolio/landing/shared/ui';
+import { CONSOLE_URL } from '@portfolio/landing/shared/util';
 import { provideBlockRenderers } from '@portfolio/shared/features/rte-contract';
 import { DDL_GROUPS, DDL_REGISTRY, entryFragment, entryLink } from './pages/ddl/ddl.registry';
 
@@ -46,6 +53,8 @@ export const appConfig: ApplicationConfig = {
     provideBlockRenderers(imageRefBlockRenderer, galleryBlockRenderer),
     provideHttpClient(withFetch()),
     { provide: COMMAND_PALETTE_SEARCH_SOURCES, useValue: DDL_COMMAND_RESULTS },
+    // Console origin for the medicine cabinet's edit links (dev port from .claude/launch.json).
+    { provide: CONSOLE_URL, useValue: isDevMode() ? 'http://localhost:4300' : 'https://console.thunderphong.com' },
     // Anchor scroll offset for sticky header (h-16 = 64px) + breathing room (16px)
     provideAppInitializer(() => {
       inject(ViewportScroller).setOffset([0, 80]);

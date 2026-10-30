@@ -1,4 +1,9 @@
-import { type SocialPlatform } from '@portfolio/shared/types';
+import {
+  type MedicalItemKind,
+  type MedicineTiming,
+  type MedicineUsageType,
+  type SocialPlatform,
+} from '@portfolio/shared/types';
 
 export const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
   FULL_TIME: 'Full Time',
@@ -66,4 +71,21 @@ export const SOCIAL_PLATFORM_LABELS: Record<SocialPlatform, string> = {
   ZALO: 'Zalo',
   WEBSITE: 'Website',
   OTHER: 'External link',
+};
+
+export const MEDICAL_ITEM_KIND_LABELS: Record<MedicalItemKind, string> = {
+  MEDICINE: 'Medicine',
+  SUPPLY: 'Supply',
+};
+
+export const MEDICINE_TIMING_LABELS: Record<MedicineTiming, string> = {
+  BEFORE_MEAL: 'Before meals',
+  AFTER_MEAL: 'After meals',
+  WITH_MEAL: 'With meals',
+  ANY_TIME: 'Any time',
+};
+
+export const MEDICINE_USAGE_TYPE_LABELS: Record<MedicineUsageType, string> = {
+  LONG_TERM: 'Long-term',
+  COURSE: 'Short course',
 };

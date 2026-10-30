@@ -4,3 +4,4 @@ export { PATTERNS } from './lib/patterns';
 export type { Patterns } from './lib/patterns';
 export { ERROR_KEYS } from './lib/error-keys';
 export type { ErrorKey } from './lib/error-keys';
+export { textLength } from './lib/text-length';

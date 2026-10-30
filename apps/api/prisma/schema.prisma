@@ -199,6 +199,14 @@ model User {
   postsUpdated  BlogPost[] @relation("PostUpdatedBy")
   postsDeleted  BlogPost[] @relation("PostDeletedBy")
 
+  // Medicine cabinet relations
+  healthProfilesCreated HealthProfile[] @relation("HealthProfileCreatedBy")
+  healthProfilesUpdated HealthProfile[] @relation("HealthProfileUpdatedBy")
+  healthProfilesDeleted HealthProfile[] @relation("HealthProfileDeletedBy")
+  medicalItemsCreated   MedicalItem[]   @relation("MedicalItemCreatedBy")
+  medicalItemsUpdated   MedicalItem[]   @relation("MedicalItemUpdatedBy")
+  medicalItemsDeleted   MedicalItem[]   @relation("MedicalItemDeletedBy")
+
   @@map("users")
 }
 
@@ -1236,4 +1244,74 @@ model ChecklistRun {
 
   @@index([status, updatedAt(sort: Desc)])
   @@map("checklist_runs")
+}
+
+// ─── Medicine cabinet ─────────────────────────────────────────────────────────
+
+enum MedicalItemKind {
+  MEDICINE
+  SUPPLY
+}
+
+enum MedicineTiming {
+  BEFORE_MEAL
+  AFTER_MEAL
+  WITH_MEAL
+  ANY_TIME
+}
+
+enum MedicineUsageType {
+  LONG_TERM
+  COURSE
+}
+
+/// A person whose medicines the cabinet tracks. Names are unique ignoring case among people not
+/// deleted: the migration adds a partial unique index on lower(name) WHERE "deletedAt" IS NULL.
+model HealthProfile {
+  id          String    @id @db.Uuid
+  name        String    @db.VarChar(50)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById String    @db.Uuid
+  updatedById String    @db.Uuid
+  deletedAt   DateTime?
+  deletedById String?   @db.Uuid
+
+  createdBy User          @relation("HealthProfileCreatedBy", fields: [createdById], references: [id])
+  updatedBy User          @relation("HealthProfileUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy User?         @relation("HealthProfileDeletedBy", fields: [deletedById], references: [id])
+  items     MedicalItem[]
+
+  @@map("health_profiles")
+}
+
+/// A medicine or a supply of one person. Medicine-only columns stay null for a supply.
+model MedicalItem {
+  id                String             @id @db.Uuid
+  profileId         String             @db.Uuid
+  kind              MedicalItemKind
+  name              String             @db.VarChar(200)
+  activeIngredients String[]           @default([])
+  strength          String?            @db.VarChar(50)
+  dose              String?            @db.VarChar(100)
+  timing            MedicineTiming?
+  usageType         MedicineUsageType?
+  purpose           String?            @db.VarChar(500)
+  note              String?            @db.VarChar(2000)
+  packForTravel     Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  createdById       String             @db.Uuid
+  updatedById       String             @db.Uuid
+  deletedAt         DateTime?
+  deletedById       String?            @db.Uuid
+
+  profile   HealthProfile @relation(fields: [profileId], references: [id])
+  createdBy User          @relation("MedicalItemCreatedBy", fields: [createdById], references: [id])
+  updatedBy User          @relation("MedicalItemUpdatedBy", fields: [updatedById], references: [id])
+  deletedBy User?         @relation("MedicalItemDeletedBy", fields: [deletedById], references: [id])
+
+  @@index([profileId, deletedAt])
+  @@index([updatedAt])
+  @@map("medical_items")
 }

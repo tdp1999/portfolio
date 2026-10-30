@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import type { UnsavedChangesDialogData } from './unsaved-changes.dialog.types';
 
 export type { HasUnsavedChanges, UnsavedChangesResult, UnsavedChangesDialogData } from './unsaved-changes.dialog.types';
-export { unsavedChangesGuard, onBeforeUnload } from './unsaved-changes.dialog.util';
+export { askUnsavedChanges, unsavedChangesGuard, onBeforeUnload } from './unsaved-changes.dialog.util';
 
 @Component({
   selector: 'console-unsaved-changes-dialog',

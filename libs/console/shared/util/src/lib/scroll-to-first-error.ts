@@ -8,7 +8,7 @@ export function scrollToFirstError(root: ParentNode = document): void {
   );
   if (!invalid) return;
 
-  invalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  invalid.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
   const focusable = invalid.querySelector<HTMLElement>('input, textarea, select, [tabindex]');
   focusable?.focus({ preventScroll: true });
 }

@@ -1,0 +1,89 @@
+<div class="crud-page">
+  <div class="crud-header">
+    <div class="people-header">
+      <a mat-icon-button routerLink="/medicine-cabinet" aria-label="Back to items">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div>
+        <h1 class="text-page-title">People</h1>
+        <p class="crud-header__subtitle">Everyone whose medicines and supplies you record.</p>
+      </div>
+    </div>
+    <button mat-flat-button type="button" (click)="add()">Add person</button>
+  </div>
+
+  @if (loading()) {
+    <div class="crud-table-container">
+      <console-skeleton-table [columns]="displayedColumns.length" [rows]="6" />
+    </div>
+  } @else if (people().length === 0) {
+    <div class="crud-table-container people-empty">
+      <p class="text-section-heading">No people yet</p>
+      <p class="text-body text-text-secondary">Add a person to start recording items.</p>
+    </div>
+  } @else if (useCards()) {
+    <ul class="people-cards">
+      @for (person of people(); track person.id) {
+        <li class="people-card" data-testid="person-row">
+          <div class="min-w-0">
+            <p class="text-body font-semibold truncate" data-testid="person-name">{{ person.name }}</p>
+            <p class="text-caption text-text-secondary">
+              {{ person.itemCount }} {{ person.itemCount === 1 ? 'item' : 'items' }}
+            </p>
+          </div>
+          <ng-container *ngTemplateOutlet="actions; context: { $implicit: person }" />
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="crud-table-container">
+      <table mat-table [dataSource]="people()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let person" data-testid="person-name">{{ person.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="items">
+          <th mat-header-cell *matHeaderCellDef>Items</th>
+          <td mat-cell *matCellDef="let person">{{ person.itemCount }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+          <td mat-cell *matCellDef="let person" class="col-actions">
+            <ng-container *ngTemplateOutlet="actions; context: { $implicit: person }" />
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" data-testid="person-row"></tr>
+      </table>
+    </div>
+  }
+</div>
+
+<ng-template #actions let-person>
+  <div class="people-actions">
+    <button
+      mat-icon-button
+      type="button"
+      matTooltip="Rename"
+      [attr.aria-label]="'Rename ' + person.name"
+      data-testid="person-rename"
+      (click)="rename(person)"
+    >
+      <mat-icon class="icon-sm text-text-muted">edit</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      type="button"
+      matTooltip="Delete"
+      [attr.aria-label]="'Delete ' + person.name"
+      data-testid="person-delete"
+      [disabled]="deletingIds() | setHas: person.id"
+      (click)="confirmDelete(person)"
+    >
+      <mat-icon class="icon-sm text-red-400">delete</mat-icon>
+    </button>
+  </div>
+</ng-template>

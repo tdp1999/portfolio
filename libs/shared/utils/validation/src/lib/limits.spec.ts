@@ -1,6 +1,7 @@
 import { LIMITS } from './limits';
 import { PATTERNS } from './patterns';
 import { ERROR_KEYS } from './error-keys';
+import { textLength } from '../index';
 
 describe('shared-validation constants', () => {
   it('locks in canonical caps from the validation epic ADRs', () => {
@@ -67,5 +68,23 @@ describe('shared-validation constants', () => {
     expect(ERROR_KEYS.urlInvalid).toBe('urlInvalid');
     expect(ERROR_KEYS.integerOnly).toBe('integerOnly');
     expect(ERROR_KEYS.translatableEnViRequired).toBe('translatableEnViRequired');
+  });
+
+  // AC-19 · medicine cabinet EP + BVA table: a length is counted after trim and NFC, the same way in the
+  // console form and in the Zod atoms.
+  describe('textLength', () => {
+    const NFD_E_DOT_CIRCUMFLEX = 'e\u0323\u0302'; // "ệ" written as three code points
+
+    it('BVA: counts "ệ" written in NFD as one character', () => {
+      expect(textLength(NFD_E_DOT_CIRCUMFLEX)).toBe(1);
+    });
+
+    it('BVA: counts after trimming both ends', () => {
+      expect(textLength('  Mẹ  ')).toBe(2);
+    });
+
+    it('BVA: counts a string of only spaces as empty', () => {
+      expect(textLength('   ')).toBe(0);
+    });
   });
 });

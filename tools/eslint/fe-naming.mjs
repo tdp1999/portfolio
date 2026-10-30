@@ -26,6 +26,8 @@ const ROLES = new Set([
   'empty', 'skeleton', 'fallback', 'error',
   // layout
   'layout', 'shell',
+  // navigation
+  'tabs',
 ]);
 const VARIANTS = new Set(['create', 'edit', 'public', 'admin', 'trash', 'mobile', 'desktop']);
 const KEPT_KINDS = new Set([
@@ -96,7 +98,8 @@ const filenameGrammar = {
         // console: every segment after the entity must be a known role/variant/kind
         if (isConsolePath(filename) && !isLandingPath(filename) && segments.length > 1) {
           for (const seg of segments.slice(1)) {
-            if (!CONSOLE_ALLOWED.has(seg)) {
+            // a dash-joined role such as `delete-dialog` (§5) ends in a known role
+            if (!CONSOLE_ALLOWED.has(seg) && !ROLES.has(seg.split('-').pop())) {
               context.report({ node, messageId: 'vocab', data: { seg } });
               return;
             }

@@ -95,12 +95,12 @@ export class RadarItemTriageSection {
   /** A decision is on its way: the buttons and keys wait for it. */
   readonly busy = input(false);
 
-  readonly select = output<string>();
+  readonly rowSelect = output<string>();
   /** The walk ran past this page's edge while the Feed has more: the host loads the adjacent page. */
   readonly pageStep = output<1 | -1>();
   readonly decide = output<RadarTriageDecision>();
   /** X or Escape: back to the full table. */
-  readonly close = output<void>();
+  readonly closed = output<void>();
   /** A note was added or removed here: the host updates that post's note summary. */
   readonly notesChange = output<RadarNotesChange>();
 
@@ -230,7 +230,7 @@ export class RadarItemTriageSection {
       delta,
       this.bounds()
     );
-    if (step?.kind === 'select') this.select.emit(step.id);
+    if (step?.kind === 'select') this.rowSelect.emit(step.id);
     else if (step) this.pageStep.emit(step.delta);
   }
 
@@ -318,7 +318,7 @@ export class RadarItemTriageSection {
       s: () => this.onSave(),
       n: () => this.openNote(null),
       o: () => this.onOpenOriginal(),
-      Escape: () => this.close.emit(),
+      Escape: () => this.closed.emit(),
     };
     const run = handlers[e.key.length === 1 ? e.key.toLowerCase() : e.key];
     if (!run || (e.shiftKey && e.key.length === 1)) return;

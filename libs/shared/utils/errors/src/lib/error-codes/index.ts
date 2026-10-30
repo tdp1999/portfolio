@@ -15,3 +15,4 @@ export { AboutPrincipleErrorCode } from './about-principle.error-codes';
 export { AboutFailureErrorCode } from './about-failure.error-codes';
 export { RadarErrorCode } from './radar.error-codes';
 export { ChecklistErrorCode } from './checklist.error-codes';
+export { MedicalItemErrorCode, HealthProfileErrorCode } from './medicine-cabinet.error-codes';

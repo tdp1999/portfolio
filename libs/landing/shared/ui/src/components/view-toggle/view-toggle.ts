@@ -41,6 +41,7 @@ import { LandingLocaleService } from '../../services/locale/landing-locale.servi
             type="button"
             class="lvt__btn"
             role="radio"
+            [attr.data-testid]="option.testId ?? null"
             [class.lvt__btn--active]="value() === option.id"
             [attr.aria-checked]="value() === option.id ? 'true' : 'false'"
             [attr.aria-label]="option.label"

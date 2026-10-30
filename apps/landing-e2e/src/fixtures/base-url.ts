@@ -9,3 +9,6 @@
  * Change both together.
  */
 export const BASE_URL = 'http://localhost:4200';
+
+/** The console dev server, which serves the edit form that landing pages link to. */
+export const CONSOLE_URL = 'http://localhost:4300';

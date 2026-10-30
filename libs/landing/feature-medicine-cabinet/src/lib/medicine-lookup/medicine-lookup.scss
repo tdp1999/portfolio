@@ -1,0 +1,170 @@
+@use 'base/breakpoints' as bp;
+
+.lookup__head {
+  margin-bottom: 24px;
+}
+
+.lookup__title {
+  margin: 0;
+  color: var(--landing-text);
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-display-sm);
+  line-height: var(--landing-display-sm-lh);
+}
+
+.lookup__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.lookup__search {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+
+.lookup__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.lookup__results {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.lookup-group__heading {
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--landing-border);
+  color: var(--landing-text);
+  font-size: var(--landing-body-lg);
+  line-height: var(--landing-body-lg-lh);
+  font-weight: 600;
+}
+
+.lookup-subtable + .lookup-subtable {
+  margin-top: 24px;
+}
+
+.lookup-subtable__heading {
+  margin: 0 0 8px;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+  text-transform: uppercase;
+}
+
+// A wide medicine table scrolls sideways on a phone instead of squeezing every column.
+.lookup-table__scroll {
+  overflow-x: auto;
+}
+
+.lookup-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+
+  th {
+    padding: 8px 12px;
+    color: var(--landing-text-500);
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--landing-border);
+  }
+
+  td {
+    padding: 12px;
+    color: var(--landing-text-300);
+    vertical-align: top;
+    border-bottom: 1px solid var(--landing-border);
+  }
+}
+
+.lookup-table__row:has(+ .lookup-table__note-row) td {
+  border-bottom: 0;
+}
+
+.lookup-table__actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.lookup__missing {
+  color: var(--landing-text-500);
+  font-style: italic;
+}
+
+.lookup__note {
+  margin: 0;
+  color: var(--landing-text-300);
+  white-space: pre-line;
+}
+
+.lookup-table__note-row td {
+  padding-top: 0;
+  color: var(--landing-text-300);
+}
+
+.lookup-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  @include bp.respond-to('tablet') {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include bp.respond-to('laptop') {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.lookup-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--landing-border);
+  border-radius: 8px;
+  background: var(--landing-ink-1);
+}
+
+.lookup-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lookup-card__fields {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+
+  dt {
+    color: var(--landing-text-500);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--landing-text-300);
+  }
+}
+
+.lookup-card__field {
+  display: grid;
+  grid-template-columns: minmax(96px, 40%) 1fr;
+  gap: 8px;
+}
