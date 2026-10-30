@@ -17,7 +17,7 @@ import {
 import { Button, Icon, Tooltip } from '@portfolio/landing/shared/ui';
 import type { ChecklistRef, ChecklistRow, ChecklistRunBody, ChecklistSectionedContent } from '@portfolio/shared/types';
 
-import { CHECKLIST_LOOKUP_SLUG } from '../checklist.constants';
+import { CHECKLIST_LOOKUP_SLUG, CHECKLIST_PROFILE_FILE } from '../checklist.constants';
 import { ChecklistConfirmDialog } from '../checklist.confirm-dialog/checklist.confirm-dialog';
 import { ChecklistGroupRow } from '../checklist.group-row/checklist.group-row';
 import { ChecklistPhaseHeader } from '../checklist.phase-header/checklist.phase-header';
@@ -96,9 +96,11 @@ export class ChecklistBoard {
   readonly heading = input.required<string>();
   /** The lookup table, for `tra X`; null until loaded. */
   readonly lookup = input<ChecklistSectionedContent | null>(null);
-  /** The run's project profile, for `📁 §N`; null until loaded. */
+  /** The run's project profile, for `📁 §N`; null until loaded. Only an old run has one here. */
   readonly project = input<ChecklistSectionedContent | null>(null);
   readonly projectSlug = input('');
+  /** The site has no profile for this run's project: it lives in that project's repo (a new run). */
+  readonly profileInRepo = input(false);
   /** Nothing can be changed (the page stopped saving): the run stays readable. */
   readonly locked = input(false);
   /** A template, not a run: no progress, no ticks, notes or edit mode; reading, folding and refs only. */
@@ -145,6 +147,8 @@ export class ChecklistBoard {
     const lookup = ref.kind === 'lookup';
     const doc = lookup ? this.lookup() : this.project();
     const section = doc ? findLookupSection(doc.sections, ref.key) : null;
+    const project = this.projectSlug();
+    const inRepo = !lookup && !!project && this.profileInRepo();
     return {
       ref,
       // The panel already names the marker; the `⚙ review` that tags the section title would repeat it.
@@ -154,10 +158,21 @@ export class ChecklistBoard {
         : this.projectSlug()
           ? `Project profile · ${this.projectSlug()}`
           : 'Project profile',
-      file: lookup ? `${CHECKLIST_LOOKUP_SLUG}.md` : this.projectSlug() ? `projects/${this.projectSlug()}.md` : '',
-      // A template has no project yet: its § refs point at whichever project a run picks.
-      emptyMessage:
-        !lookup && !this.projectSlug() ? `Section ${ref.key} comes from the project profile a run picks.` : '',
+      file: lookup
+        ? `${CHECKLIST_LOOKUP_SLUG}.md`
+        : inRepo
+          ? CHECKLIST_PROFILE_FILE
+          : project
+            ? `projects/${project}.md`
+            : '',
+      // A template has no project yet: its § refs point at whichever project a run names. A new
+      // run's profile is in the project's repo, which the site does not read.
+      emptyMessage: inRepo
+        ? `Open section ${ref.key} of ${CHECKLIST_PROFILE_FILE} in the ${project} repo.`
+        : !lookup && !project
+          ? `Section ${ref.key} comes from the profile of the project a run names.`
+          : '',
+      emptyTitle: inRepo ? 'In the project repo' : 'Set by the run',
     };
   });
 

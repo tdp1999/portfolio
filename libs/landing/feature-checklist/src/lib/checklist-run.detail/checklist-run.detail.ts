@@ -12,9 +12,10 @@ import type {
 } from '@portfolio/shared/types';
 
 import { ChecklistBoard } from '../checklist.board/checklist.board';
-import { CHECKLIST_LOOKUP_SLUG, CHECKLIST_SAVE_STATES } from '../checklist.constants';
+import { CHECKLIST_LOOKUP_SLUG, CHECKLIST_OLD_LOOKUP_SLUG, CHECKLIST_SAVE_STATES } from '../checklist.constants';
 import { ChecklistService } from '../checklist.service';
 import type { ChecklistSaveState } from '../checklist.types';
+import { profileInRepo } from '../checklist.util';
 
 /**
  * A run (`/checklist/:id`): the board on the run's body, saved as it changes. Saves wait for a
@@ -46,6 +47,8 @@ export default class ChecklistRunDetail {
   protected readonly saveInfo = computed(() => CHECKLIST_SAVE_STATES[this.saveState()]);
   protected readonly lookup = signal<ChecklistSectionedContent | null>(null);
   protected readonly project = signal<ChecklistSectionedContent | null>(null);
+  /** No profile on the site for the run's project: a new run, whose profile is in the project's repo. */
+  protected readonly profileInRepo = signal(false);
 
   /** The version the server holds for what this page last saved. */
   private version = 0;
@@ -69,10 +72,14 @@ export default class ChecklistRunDetail {
       this.edits.complete();
     });
     this.load();
-    this.api.getDoc('LOOKUP', CHECKLIST_LOOKUP_SLUG).subscribe({
-      next: (doc) => this.lookup.set(ChecklistRunDetail.sectioned(doc.content)),
-      error: () => undefined,
-    });
+    // Before the first refresh only the old lookup table exists; its letters match the new one.
+    this.api
+      .getDoc('LOOKUP', CHECKLIST_LOOKUP_SLUG)
+      .pipe(catchError(() => this.api.getDoc('LOOKUP', CHECKLIST_OLD_LOOKUP_SLUG)))
+      .subscribe({
+        next: (doc) => this.lookup.set(ChecklistRunDetail.sectioned(doc.content)),
+        error: () => undefined,
+      });
   }
 
   /** Every board change: shown at once, saved after the pause. Nothing is saved after a conflict. */
@@ -106,6 +113,12 @@ export default class ChecklistRunDetail {
         this.version = run.version;
         this.saveState.set('saved');
         this.meta.apply({ title: run.name, noindex: true });
+        // A run from a format 2 lane names the profile in its project's repo. Only an old run opens
+        // the profile doc the old sync left here, even when a new run has the same project name.
+        if (profileInRepo(run.body)) {
+          this.profileInRepo.set(true);
+          return;
+        }
         this.api.getDoc('PROJECT', run.projectSlug).subscribe({
           next: (doc) => this.project.set(ChecklistRunDetail.sectioned(doc.content)),
           error: () => undefined,

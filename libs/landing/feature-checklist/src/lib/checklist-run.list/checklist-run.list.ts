@@ -12,7 +12,7 @@ import type { CreateChecklistRunInput } from '../checklist.types';
 
 /**
  * Runs list (`/checklist`): active runs first, done and archived ones behind a toggle, and the "New
- * run" dialog that creates a run from a live template and a project.
+ * run" dialog that creates a run from a live template and a project name.
  */
 @Component({
   selector: 'landing-checklist-run-list',
@@ -29,7 +29,6 @@ export default class ChecklistRunList {
   protected readonly runs = signal<ChecklistRunSummary[] | null>(null);
   protected readonly loadFailed = signal(false);
   protected readonly templates = signal<ChecklistDocSummary[]>([]);
-  protected readonly projects = signal<ChecklistDocSummary[]>([]);
 
   protected readonly formOpen = signal(false);
   protected readonly creating = signal(false);
@@ -55,7 +54,6 @@ export default class ChecklistRunList {
     });
     // Live docs only, so an archived template is never offered (CHK-002).
     this.api.listDocs('TEMPLATE').subscribe({ next: (docs) => this.templates.set(docs), error: () => undefined });
-    this.api.listDocs('PROJECT').subscribe({ next: (docs) => this.projects.set(docs), error: () => undefined });
   }
 
   protected openForm(): void {
@@ -70,7 +68,7 @@ export default class ChecklistRunList {
       next: ({ id }) => void this.router.navigate(['/checklist', id]),
       error: () => {
         this.creating.set(false);
-        this.createError.set('Could not create the run. Check the template and project still exist, then try again.');
+        this.createError.set('Could not create the run. Check the template still exists, then try again.');
       },
     });
   }

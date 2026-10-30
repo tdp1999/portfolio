@@ -20,7 +20,6 @@ import type { CreateChecklistRunInput } from '../checklist.types';
 export class ChecklistRunCreateDialog {
   readonly open = input(false);
   readonly templates = input.required<readonly ChecklistDocSummary[]>();
-  readonly projects = input.required<readonly ChecklistDocSummary[]>();
   readonly submitting = input(false);
   readonly error = input<string | null>(null);
 

@@ -50,3 +50,18 @@ export interface ChecklistConfirm {
 
 /** Where the run page's autosave is: everything saved, waiting for a pause, on its way, or stopped. */
 export type ChecklistSaveState = 'saved' | 'pending' | 'saving' | 'failed' | 'conflict';
+
+/**
+ * A row as the page lays it out. A format 2 row has an SN, a title, a description and a list; a
+ * row of an old run (format 1) or one the Owner added has its text alone, as the title.
+ */
+export interface ChecklistRowView {
+  sn: string | null;
+  title: string;
+  description: string | null;
+  items: readonly string[];
+  /** The playbook has an entry for this item. The page only marks it; the playbook is Claude's. */
+  claude: boolean;
+  /** The `Ref:` line's refs as inline text (`tra E · 📁 §7`), or null when every ref sits in the text. */
+  refLine: string | null;
+}

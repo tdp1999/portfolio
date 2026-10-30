@@ -9,7 +9,10 @@
     />
   } @else {
     <p class="group-row__title">
-      <landing-checklist-inline [text]="group().text" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+      @if (view().sn; as sn) {
+        <span class="group-row__sn">{{ sn }}</span>
+      }
+      <landing-checklist-inline [text]="view().title" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
     </p>
     @if (!viewOnly()) {
       <span class="group-row__count" [attr.aria-label]="progress().complete + ' of ' + progress().total + ' complete'">
@@ -56,6 +59,11 @@
     }
   }
 </div>
+@if (view().description; as description) {
+  <p class="group-row__description">
+    <landing-checklist-inline [text]="description" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+  </p>
+}
 @if (editing() === 'note') {
   <landing-checklist-row-editor
     class="group-row__note-editor"

@@ -22,10 +22,12 @@ export class ChecklistRefPanel {
   readonly section = input<ChecklistSection | null>(null);
   /** Where the section comes from, e.g. "Lookup table" or "Project · portfolio". */
   readonly source = input('');
-  /** The workflow file the section lives in, e.g. `bang-tra.md`: the panel is read-only, edits go there. */
+  /** The file the section lives in, e.g. `lookup.md`: the panel is read-only, edits go there. */
   readonly file = input('');
   /** Why there is no section, when it is not "the doc has none" (a template has no project yet). */
   readonly emptyMessage = input('');
+  /** The title shown with `emptyMessage`. */
+  readonly emptyTitle = input('Set by the run');
 
   readonly closed = output<void>();
 
@@ -34,7 +36,7 @@ export class ChecklistRefPanel {
     return section ? renderSectionMarkdown(section.markdown) : '';
   });
   /** A section that cannot exist yet (a template's project ref) is not "not found". */
-  protected readonly missingTitle = computed(() => (this.emptyMessage() ? 'Set by the run' : 'Section not found'));
+  protected readonly missingTitle = computed(() => (this.emptyMessage() ? this.emptyTitle() : 'Section not found'));
   protected readonly empty = computed(() => this.emptyMessage() || `This document has no section ${this.key()}.`);
   protected readonly key = computed(() => (this.ref().kind === 'lookup' ? this.ref().key : `§${this.ref().key}`));
 }

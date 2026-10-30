@@ -8,10 +8,10 @@ import type { ChecklistRef, ChecklistTask } from '@portfolio/shared/types';
 import { ChecklistInline } from '../checklist.inline/checklist.inline';
 import { ChecklistRowEditor } from '../checklist.row-editor/checklist.row-editor';
 import type { ChecklistDensity, ChecklistRowAction, ChecklistRowField } from '../checklist.types';
-import { taskMatchesRole } from '../checklist.util';
+import { rowView, taskMatchesRole } from '../checklist.util';
 
 /**
- * One task: checkbox, text, who does it and who checks it, its note, and a quiet × that marks it
+ * One task: checkbox, its text, who does it and who checks it, its note, and a quiet × that marks it
  * skipped (done without doing it, which still counts as complete, CHK-003). A skipped row keeps its
  * checkbox empty and strikes its text; an undo icon takes the × slot and returns it to todo. Under
  * an active role filter a row that does not involve the role is dimmed, never removed. `compact`
@@ -19,7 +19,8 @@ import { taskMatchesRole } from '../checklist.util';
  *
  * The note is part of working a run, so its button is always there. Editing the text and deleting
  * the row are structure changes, offered only when `editable` (the page's edit mode) is on.
- * The text is the checkbox's label, so a click on it ticks the row. `viewOnly` (a template) drops
+ * A format 2 task shows its SN, a bold title, a description and a list; an old run's task shows its
+ * text alone (see `rowView`). The title line is the checkbox's label, so a click on it ticks the row. `viewOnly` (a template) drops
  * the checkbox and every action; the empty check slot keeps the columns where a run has them.
  */
 @Component({
@@ -61,10 +62,14 @@ export class ChecklistTaskRow {
   protected readonly checkId = `checklist-task-${ChecklistTaskRow.nextId++}`;
   protected readonly editing = signal<ChecklistRowField | null>(null);
 
+  protected readonly view = computed(() => rowView(this.task()));
   protected readonly checked = computed(() => this.task().state === 'done');
   protected readonly dimmed = computed(() => !taskMatchesRole(this.task(), this.role()));
-  /** The checkbox's name: the row text without its markdown markers. */
-  protected readonly label = computed(() => this.task().text.replace(/\*\*|`/g, ''));
+  /** The checkbox's name: the SN and title without markdown markers. */
+  protected readonly label = computed(() => {
+    const { sn, title } = this.view();
+    return `${sn ? sn + ' ' : ''}${title.replace(/\*\*|`/g, '')}`;
+  });
 
   protected onCheck(checked: boolean): void {
     this.setState(checked ? 'done' : 'todo');

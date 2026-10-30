@@ -15,6 +15,8 @@ import {
   withRowText,
   withShiftedRow,
   withTaskState,
+  rowView,
+  profileInRepo,
 } from './checklist.util';
 
 const task = (id: string, patch: Partial<ChecklistTask> = {}): ChecklistTask => ({
@@ -300,5 +302,141 @@ describe('row edits', () => {
     expect(ids(withShiftedRow(body(), 'g', 1))).toEqual(['a', 'g,b,c']);
     expect(ids(withShiftedRow(body(), 'b', -1))).toEqual(['a,g,b', 'c']);
     expect(ids(withShiftedRow(body(), 'a', -1))).toEqual(ids(body()));
+  });
+});
+
+describe('rowView', () => {
+  it('should show a row of an old run as its text alone, with no SN, description or list', () => {
+    expect(rowView(task('a', { text: 'Viết vấn đề<br>trong một câu' }))).toEqual({
+      sn: null,
+      title: 'Viết vấn đề<br>trong một câu',
+      description: null,
+      items: [],
+      claude: false,
+      refLine: null,
+    });
+  });
+
+  it('should show a format 2 row with its SN, title, description, list and Claude mark', () => {
+    const row = task('a', {
+      sn: '5.1c',
+      text: 'Chạy review-round',
+      description: 'Claude chạy review-round sau mỗi batch.',
+      items: ['Hai reviewer chạy song song.', 'Owner chỉ duyệt phần 1.'],
+      claude: true,
+      refLine: null,
+    });
+
+    expect(rowView(row)).toEqual({
+      sn: '5.1c',
+      title: 'Chạy review-round',
+      description: 'Claude chạy review-round sau mỗi batch.',
+      items: ['Hai reviewer chạy song song.', 'Owner chỉ duyệt phần 1.'],
+      claude: true,
+      refLine: null,
+    });
+  });
+
+  it('should show a group with its SN and description and no list', () => {
+    const group: ChecklistPhase['rows'][number] = {
+      kind: 'group',
+      id: 'g',
+      sn: '6.2',
+      text: 'Tự kiểm 4 lớp',
+      description: 'Owner kiểm theo thứ tự.',
+      refs: [],
+      note: '',
+      children: [],
+    };
+
+    expect(rowView(group)).toEqual({
+      sn: '6.2',
+      title: 'Tự kiểm 4 lớp',
+      description: 'Owner kiểm theo thứ tự.',
+      items: [],
+      claude: false,
+      refLine: null,
+    });
+  });
+
+  it('should show the refs of the "Ref:" line that the text does not hold, after the list', () => {
+    const row = task('a', {
+      sn: '1.2',
+      text: 'Viết vấn đề',
+      description: 'Theo tra B.',
+      items: ['Ghi vào E1.'],
+      refs: [
+        { kind: 'lookup', key: 'B' },
+        { kind: 'lookup', key: 'E' },
+        { kind: 'project', key: '7' },
+        { kind: 'lookup', key: 'review' },
+      ],
+    });
+
+    expect(rowView(row).refLine).toBe('tra E · 📁 §7 · ⚙ review');
+  });
+});
+
+describe('withRowText on a format 2 row', () => {
+  it('should keep the refs of the description, list and "Ref:" line when the title changes', () => {
+    const row = task('a', {
+      sn: '1.2',
+      text: 'Viết vấn đề tra A',
+      description: 'Theo tra B.',
+      refs: [
+        { kind: 'lookup', key: 'A' },
+        { kind: 'lookup', key: 'B' },
+        { kind: 'project', key: '7' },
+      ],
+    });
+
+    const edited = withRowText(
+      { intro: { markdown: '', refs: [] }, phases: [phase([row])], footer: null },
+      'a',
+      'Viết lại tra C'
+    );
+
+    expect(edited.phases[0].rows[0].refs).toEqual([
+      { kind: 'lookup', key: 'C' },
+      { kind: 'lookup', key: 'B' },
+      { kind: 'project', key: '7' },
+    ]);
+  });
+});
+
+describe('withRowText when the title and the description share a ref', () => {
+  it('should keep the ref the description still holds after the new title drops it', () => {
+    const row = task('a', {
+      sn: '1.2',
+      text: 'Viết tra A',
+      description: 'Theo tra A.',
+      refs: [{ kind: 'lookup', key: 'A' }],
+    });
+
+    const edited = withRowText(
+      { intro: { markdown: '', refs: [] }, phases: [phase([row])], footer: null },
+      'a',
+      'Viết lại'
+    );
+
+    expect(edited.phases[0].rows[0].refs).toEqual([{ kind: 'lookup', key: 'A' }]);
+  });
+});
+
+describe('profileInRepo', () => {
+  it('should say a run made from a format 2 lane keeps its profile in the project repo', () => {
+    const body = {
+      intro: { markdown: '', refs: [] },
+      phases: [phase([task('a'), task('b', { sn: '1.2' })])],
+      footer: null,
+    };
+
+    expect(profileInRepo(body)).toBe(true);
+  });
+
+  it('should say an old run, whose rows have no SN, opens the old profile', () => {
+    const body = { intro: { markdown: '', refs: [] }, phases: [phase([task('a'), task('b')])], footer: null };
+
+    expect(profileInRepo(body)).toBe(false);
   });
 });

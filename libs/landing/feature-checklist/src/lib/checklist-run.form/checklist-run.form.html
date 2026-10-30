@@ -39,14 +39,17 @@
     label="Project"
     inputId="run-form-project"
     metaId="run-form-project-meta"
-    [error]="project.invalid && project.touched ? 'Pick a project.' : null"
+    [error]="project.invalid && project.touched ? 'Name the project.' : null"
   >
-    <landing-select
+    <landing-input
+      inputId="run-form-project"
       formControlName="projectSlug"
-      [options]="projectOptions()"
-      placeholder="Choose a project"
-      ariaLabel="Project"
-      appearance="field"
+      autocomplete="off"
+      placeholder="The repo's name, e.g. portfolio"
+      size="sm"
+      [maxLength]="100"
+      [hasError]="project.invalid && project.touched"
+      ariaDescribedBy="run-form-project-meta"
     />
   </landing-form-field>
 

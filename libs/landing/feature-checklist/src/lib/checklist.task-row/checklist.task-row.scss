@@ -41,6 +41,7 @@
 
   @container (min-width: 880px) {
     grid-template-columns: auto minmax(0, 1fr) 200px 240px var(--checklist-row-actions, 64px);
+    column-gap: 16px;
     grid-template-areas:
       'check text roles roles action'
       '. note note note .';
@@ -61,14 +62,14 @@
   width: 30px;
 }
 
-// The text is the checkbox's label: it ticks on click, like a native checkbox's text.
-.task-row__text--toggle {
+// The title line is the checkbox's label: it ticks on click, like a native checkbox's text.
+.task-row__head--toggle {
   cursor: pointer;
 }
 
 .task-row__text {
   grid-area: text;
-  margin: 0;
+  min-width: 0;
   color: var(--landing-text-300);
   font-size: var(--landing-body-md);
   line-height: var(--landing-body-md-lh);
@@ -79,14 +80,80 @@
   line-height: var(--landing-body-sm-lh);
 }
 
+.task-row__head {
+  display: block;
+  margin: 0;
+}
+
+// The SN leads the title in mono, so "5.1c" reads as a number to find, not as words.
+.task-row__sn {
+  margin-right: 8px;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  line-height: var(--landing-mono-sm-lh);
+  letter-spacing: var(--landing-tracking-mono);
+}
+
+.task-row__title--strong {
+  color: var(--landing-text);
+  font-weight: 600;
+}
+
+// A quiet cog: Claude has playbook steps here. A mark only, nothing to open.
+.task-row__claude {
+  display: inline-flex;
+  margin-left: 8px;
+  vertical-align: middle;
+  color: var(--landing-text-600);
+}
+
+.task-row__description {
+  margin: 4px 0 0;
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.task-row__refs {
+  margin: 4px 0 0;
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.task-row__refs-label {
+  margin-right: 8px;
+  color: var(--landing-text-500);
+  font-family: var(--landing-font-mono);
+  font-size: var(--landing-mono-sm);
+  text-transform: uppercase;
+}
+
+.task-row__items {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  color: var(--landing-text-400);
+  list-style: disc;
+
+  li::marker {
+    color: var(--landing-text-600);
+  }
+}
+
 // Done reads as settled: muted, no strike (the text stays legible for review).
-:host(.task-row--done) .task-row__text {
+:host(.task-row--done) .task-row__text,
+:host(.task-row--done) .task-row__title--strong {
   color: var(--landing-text-500);
 }
 
-// Skipped is done without doing it: struck through, plus a mono tag.
-:host(.task-row--skipped) .task-row__text {
+// Skipped is done without doing it: the title line is struck through, plus a mono tag.
+:host(.task-row--skipped) .task-row__text,
+:host(.task-row--skipped) .task-row__title--strong {
   color: var(--landing-text-500);
+}
+
+:host(.task-row--skipped) .task-row__title {
   text-decoration: line-through;
   text-decoration-color: var(--landing-text-600);
 }
@@ -115,7 +182,15 @@
   @container (min-width: 880px) {
     display: grid;
     grid-template-columns: 200px 240px;
-    column-gap: 12px;
+    column-gap: 16px;
+  }
+}
+
+// A thin rule before each role column keeps Do and Check apart from the item and from each other.
+:host(.task-row--compact) .task-row__role {
+  @container (min-width: 880px) {
+    padding-left: 12px;
+    border-left: 1px solid var(--landing-border);
   }
 }
 

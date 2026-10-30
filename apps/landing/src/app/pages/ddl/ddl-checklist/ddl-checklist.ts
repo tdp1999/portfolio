@@ -21,7 +21,12 @@ import type { ChecklistRunBody, ChecklistTask } from '@portfolio/shared/types';
 import { DdlDocPage } from '../ddl-doc-page/ddl-doc-page';
 import { DdlSection } from '../ddl-section/ddl-section';
 import { DdlStage } from '../ddl-stage/ddl-stage';
-import { DDL_CHECKLIST_LOOKUP, DDL_CHECKLIST_PROJECT, DDL_CHECKLIST_RUN } from './ddl-checklist.data';
+import {
+  DDL_CHECKLIST_LOOKUP,
+  DDL_CHECKLIST_OLD_RUN,
+  DDL_CHECKLIST_PROJECT,
+  DDL_CHECKLIST_RUN,
+} from './ddl-checklist.data';
 
 /**
  * The Owner's checklist run page in the picked layout, Compact (task 432). The stage is the real
@@ -38,6 +43,7 @@ export class DdlChecklist {
   protected readonly sections: readonly InPageSection[] = [
     { id: 'run-page', title: 'Run page', level: 2 },
     { id: 'template-view', title: 'Template view', level: 2 },
+    { id: 'old-run', title: 'Old run', level: 2 },
     { id: 'pieces', title: 'Pieces', level: 2 },
     { id: 'notes', title: 'Notes', level: 2 },
   ];
@@ -45,6 +51,7 @@ export class DdlChecklist {
   protected readonly lookup = DDL_CHECKLIST_LOOKUP;
   protected readonly project = DDL_CHECKLIST_PROJECT;
   protected readonly body = signal(DDL_CHECKLIST_RUN);
+  protected readonly oldBody = signal(DDL_CHECKLIST_OLD_RUN);
 
   /** The same size as a template: every row todo, no notes (the board in `viewOnly` shows neither). */
   protected readonly template: ChecklistRunBody = {
@@ -76,6 +83,8 @@ export class DdlChecklist {
       done: find((t) => t.state === 'done' && !t.note),
       skipped: find((t) => t.state === 'skipped'),
       noted: find((t) => !!t.note),
+      claude: find((t) => t.claude === true && !!t.items?.length),
+      old: DDL_CHECKLIST_OLD_RUN.phases[0].rows.find((r): r is ChecklistTask => r.kind === 'task') ?? tasks[0],
     };
   });
   protected readonly sampleGroup = computed(() => {

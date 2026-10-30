@@ -3,10 +3,23 @@
 }
 
 // A line after a <br>: its own block, indented under the first line, with air between lines.
+// A dot hangs in the indent, so each line reads as a list item.
 .checklist-inline__line {
+  position: relative;
   display: block;
   margin-top: 4px;
-  padding-left: 12px;
+  padding-left: 16px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: calc(0.5lh - 2px);
+    left: 4px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--landing-text-500);
+  }
 }
 
 .checklist-inline__strong {

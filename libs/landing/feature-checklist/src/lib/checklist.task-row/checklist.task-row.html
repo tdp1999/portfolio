@@ -17,22 +17,58 @@
     (saved)="saveText($event)"
     (cancelled)="editing.set(null)"
   />
-} @else if (viewOnly()) {
-  <p class="task-row__text">
-    <ng-container [ngTemplateOutlet]="text" />
-  </p>
 } @else {
-  <!-- The text is the checkbox's label, as with a native checkbox: a click on it ticks or unticks
-       (a ref inside is a button, which a label never forwards). The click handler only cancels a
-       tick that ends a text selection; the keyboard way is the checkbox itself. -->
-  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
-  <label class="task-row__text task-row__text--toggle" [for]="checkId" (click)="onTextClick($event)">
-    <ng-container [ngTemplateOutlet]="text" />
-  </label>
+  <div class="task-row__text">
+    @if (viewOnly()) {
+      <p class="task-row__head">
+        <ng-container [ngTemplateOutlet]="head" />
+      </p>
+    } @else {
+      <!-- The title line is the checkbox's label, as with a native checkbox: a click on it ticks or
+           unticks (a ref inside is a button, which a label never forwards). The click handler only
+           cancels a tick that ends a text selection; the keyboard way is the checkbox itself. -->
+      <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
+      <label class="task-row__head task-row__head--toggle" [for]="checkId" (click)="onTextClick($event)">
+        <ng-container [ngTemplateOutlet]="head" />
+      </label>
+    }
+    @if (view().description; as description) {
+      <p class="task-row__description">
+        <landing-checklist-inline [text]="description" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+      </p>
+    }
+    @if (view().items.length) {
+      <ul class="task-row__items">
+        @for (item of view().items; track $index) {
+          <li>
+            <landing-checklist-inline [text]="item" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+          </li>
+        }
+      </ul>
+    }
+    @if (view().refLine; as refs) {
+      <p class="task-row__refs">
+        <span class="task-row__refs-label">Ref</span>
+        <landing-checklist-inline [text]="refs" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+      </p>
+    }
+  </div>
 }
 
-<ng-template #text>
-  <landing-checklist-inline [text]="task().text" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+<ng-template #head>
+  @if (view().sn; as sn) {
+    <span class="task-row__sn">{{ sn }}</span>
+  }
+  <span class="task-row__title" [class.task-row__title--strong]="view().sn">
+    <landing-checklist-inline [text]="view().title" [activeRef]="activeRef()" (openRef)="openRef.emit($event)" />
+  </span>
+  @if (view().claude) {
+    <landing-tooltip text="Claude has its own steps for this item" position="bottom">
+      <span class="task-row__claude" role="img" aria-label="Claude has its own steps for this item">
+        <landing-icon name="settings" [size]="12" />
+      </span>
+    </landing-tooltip>
+  }
   @if (task().state === 'skipped') {
     <span class="task-row__tag">Skipped</span>
   }

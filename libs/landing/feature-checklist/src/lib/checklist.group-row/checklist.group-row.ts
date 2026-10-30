@@ -7,10 +7,10 @@ import { ChecklistInline } from '../checklist.inline/checklist.inline';
 import { ChecklistRowEditor } from '../checklist.row-editor/checklist.row-editor';
 import { ChecklistTaskRow } from '../checklist.task-row/checklist.task-row';
 import type { ChecklistDensity, ChecklistRowAction, ChecklistRowField } from '../checklist.types';
-import { tasksProgress } from '../checklist.util';
+import { rowView, tasksProgress } from '../checklist.util';
 
 /**
- * A group: a title with its own child count (no checkbox), then its children indented behind a
+ * A group: its SN and title with its own child count, its description (format 2) (no checkbox), then its children indented behind a
  * guide line, so a child reads as part of the group without a glyph. Children move and count with
  * it. Its own actions (note; edit and delete in edit mode) sit at the end of the title line, and its
  * children's actions pass through `action` with the child's id.
@@ -37,6 +37,7 @@ export class ChecklistGroupRow {
 
   protected readonly editing = signal<ChecklistRowField | null>(null);
 
+  protected readonly view = computed(() => rowView(this.group()));
   protected readonly progress = computed(() => tasksProgress(this.group().children));
   /** The group's name for assistive tech: its text without markdown markers. */
   protected readonly label = computed(() => this.group().text.replace(/\*\*|`/g, ''));

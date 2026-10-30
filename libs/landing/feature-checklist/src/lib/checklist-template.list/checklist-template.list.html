@@ -1,8 +1,19 @@
 <landing-container size="wide">
   <landing-back-link href="/checklist">All runs</landing-back-link>
   <header class="template-list__head">
-    <h1 class="template-list__title">Templates</h1>
-    <p class="template-list__lede">What a new run starts from. Read only: edit the file, then push the docs.</p>
+    <div class="template-list__heading">
+      <h1 class="template-list__title">Templates</h1>
+      <landing-button variant="ghost" size="sm" [disabled]="refreshing()" (buttonClick)="refresh()">
+        <landing-icon name="rotate-cw" [size]="16" />
+        {{ refreshing() ? 'Updating…' : 'Update checklist' }}
+      </landing-button>
+    </div>
+    <p class="template-list__lede">
+      What a new run starts from. Read only: edit the lane in the ctx plugin repo, then update the checklist.
+    </p>
+    @if (refreshNote(); as note) {
+      <p class="template-list__note" [class.template-list__note--error]="!note.ok" role="status">{{ note.text }}</p>
+    }
   </header>
 
   @if (sorted(); as all) {
@@ -12,7 +23,7 @@
       <landing-empty-state
         icon="file-text"
         title="No templates yet"
-        message="Push the docs from the workflow repo and they show here."
+        message="Update the checklist to read the lanes from the ctx plugin repo."
       />
     } @else {
       <ul class="template-list" aria-label="Templates">
@@ -22,7 +33,7 @@
               <landing-icon name="file-text" [size]="16" class="template-list__icon" />
               <span class="template-list__main">
                 <span class="template-list__name">{{ template.title }}</span>
-                <span class="template-list__file">{{ template.slug }}.md</span>
+                <span class="template-list__file">{{ template.slug }}</span>
               </span>
               <time class="template-list__updated" [attr.datetime]="template.updatedAt">
                 {{ template.updatedAt | date: 'd MMM y' }}

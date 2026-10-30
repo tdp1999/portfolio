@@ -8,7 +8,7 @@ import type {
   ChecklistTask,
 } from '@portfolio/shared/types';
 
-import type { ChecklistInlineLineSegment, ChecklistInlineSegment } from './checklist.types';
+import type { ChecklistInlineLineSegment, ChecklistInlineSegment, ChecklistRowView } from './checklist.types';
 
 /**
  * Inline markdown of a row, gate or note, cut into what the template renders: plain text, bold,
@@ -217,9 +217,13 @@ function editRow(
   return { ...body, phases: body.phases.map((phase) => ({ ...phase, rows: edit(phase.rows) })) };
 }
 
-/** A row's text, with its refs re-read from the new text. */
+/** A new title for a row. Refs the old title did not hold (description, list, `Ref:` line) stay. */
 export function withRowText(body: ChecklistRunBody, rowId: string, text: string): ChecklistRunBody {
-  return editRow(body, rowId, (row) => ({ ...row, text, refs: refsOf(text) }));
+  return editRow(body, rowId, (row) => {
+    const rest = [row.description ?? '', ...(row.kind === 'task' ? (row.items ?? []) : [])].join('\n');
+    const kept = refsMinus(row.refs, refsMinus(refsOf(row.text), refsOf(rest)));
+    return { ...row, text, refs: [...refsOf(text), ...refsMinus(kept, refsOf(text))] };
+  });
 }
 
 export function withRowNote(body: ChecklistRunBody, rowId: string, note: string): ChecklistRunBody {
@@ -303,6 +307,43 @@ export function findRow(body: ChecklistRunBody, rowId: string): ChecklistRow | u
     }
   }
   return undefined;
+}
+
+/** A row's parts as the page lays them out; an old run's row has its text alone. */
+export function rowView(row: ChecklistRow): ChecklistRowView {
+  return {
+    sn: row.sn ?? null,
+    title: row.text,
+    description: row.description || null,
+    items: row.kind === 'task' ? (row.items ?? []) : [],
+    claude: row.kind === 'task' && row.claude === true,
+    refLine: refLine(row),
+  };
+}
+
+/** A run copied from a format 2 lane: its rows have SNs, and its `📁 §N` refs name the profile in the project's repo. */
+export function profileInRepo(body: ChecklistRunBody): boolean {
+  return body.phases.some((phase) =>
+    phase.rows.some((row) => !!row.sn || (row.kind === 'group' && row.children.some((child) => !!child.sn)))
+  );
+}
+
+/** The refs of the `Ref:` line: the row's refs that its title, description and list do not show in place. */
+function refLine(row: ChecklistRow): string | null {
+  const inline = refsOf(
+    [row.text, row.description ?? '', ...(row.kind === 'task' ? (row.items ?? []) : [])].join('\n')
+  );
+  const rest = refsMinus(row.refs, inline);
+  return rest.length ? rest.map(refToken).join(' · ') : null;
+}
+
+function refToken(ref: ChecklistRef): string {
+  if (ref.kind === 'project') return `📁 §${ref.key}`;
+  return /^[A-Z]$/.test(ref.key) ? `tra ${ref.key}` : `⚙ ${ref.key}`;
+}
+
+function refsMinus(refs: readonly ChecklistRef[], drop: readonly ChecklistRef[]): ChecklistRef[] {
+  return refs.filter((ref) => !drop.some((d) => d.kind === ref.kind && d.key === ref.key));
 }
 
 /** A row's text as a plain label (no markdown markers), for names and confirm messages. */

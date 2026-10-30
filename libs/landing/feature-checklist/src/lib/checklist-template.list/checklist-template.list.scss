@@ -4,6 +4,25 @@
   margin: 16px 0 32px;
 }
 
+.template-list__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.template-list__note {
+  margin: 8px 0 0;
+  color: var(--landing-text-400);
+  font-size: var(--landing-body-sm);
+  line-height: var(--landing-body-sm-lh);
+}
+
+.template-list__note--error {
+  color: #f87171;
+}
+
 .template-list__title {
   margin: 0;
   color: var(--landing-text);

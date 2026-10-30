@@ -3,23 +3,25 @@
   <landing-ddl-section anchor="run-page" heading="Run page">
     <div class="cl-intro">
       <p>
-        The run page in the picked layout, <strong>Compact</strong>, on the real <code>checklist-size-l.md</code> run
-        through the API parser; a few rows are preset as done, skipped and noted. The run is a wide column in the
-        middle. A ref chip (<code>tra B</code>, <code>📁 §1</code>) opens its section as a popup over the page at every
-        width, so the run never narrows. The same chip, the close button, the backdrop or Escape closes it. The pen in
-        the toolbar turns on edit mode: every phase opens, each row gets a drag handle, edit and delete, each phase an
-        add button, and a bar at the bottom holds Cancel and Save. Use <strong>Full width</strong> to judge at true
-        viewport size.
+        The run page in the picked layout, <strong>Compact</strong>, on the real <code>lanes/size-l.md</code> of the ctx
+        plugin (format 2) run through the API parser; a few rows of phase 1 are preset as done, skipped and noted. Each
+        item shows its SN in mono, a bold title, a one-line description, its content as a list, then who does it and who
+        checks it, each column behind a thin rule. A small cog marks an item where Claude has its own steps; it opens
+        nothing, because the playbook is Claude's. The run is a wide column in the middle. A ref chip (<code>tra B</code
+        >, <code>📁 §1</code>) opens its section as a popup over the page at every width, so the run never narrows. The
+        same chip, the close button, the backdrop or Escape closes it. The pen in the toolbar turns on edit mode: every
+        phase opens, each row gets a drag handle, edit and delete, each phase an add button, and a bar at the bottom
+        holds Cancel and Save. Use <strong>Full width</strong> to judge at true viewport size.
       </p>
     </div>
 
     <landing-ddl-stage label="Run page · size L · project portfolio" width="full">
       <landing-checklist-board
-        heading="Checklist làn L"
+        heading="Checklist size L"
         projectSlug="portfolio"
         [(body)]="body"
         [lookup]="lookup"
-        [project]="project"
+        [profileInRepo]="true"
       />
     </landing-ddl-stage>
   </landing-ddl-section>
@@ -31,12 +33,34 @@
         <code>/checklist/templates/:slug</code> renders the same board with <code>viewOnly</code>: no progress, no
         checkbox, no note, skip or edit, and no counts on groups. The empty check slot keeps the text and the Do and
         Check columns where a run has them. Folding, the role filter and lookup refs still work; a project ref says it
-        waits for the project a run picks.
+        waits for the project a run names.
       </p>
     </div>
 
     <landing-ddl-stage label="Template view · size L" width="full">
-      <landing-checklist-board heading="Checklist làn L" [body]="template" [lookup]="lookup" [viewOnly]="true" />
+      <landing-checklist-board heading="Checklist size L" [body]="template" [lookup]="lookup" [viewOnly]="true" />
+    </landing-ddl-stage>
+  </landing-ddl-section>
+
+  <!-- ═══ Old run ═════════════════════════════════════════════════════════ -->
+  <landing-ddl-section anchor="old-run" heading="Old run">
+    <div class="cl-intro">
+      <p>
+        A run made before format 2 keeps the rows it copied: text only, no SN, description or list. The same board
+        renders it, with each row's text as its title in normal weight. Its <code>📁 §N</code> refs still open the old
+        project profile the site kept for it; a new run's profile lives in the project's repo, at
+        <code>.context/checklist-profile.md</code>, and its ref says so.
+      </p>
+    </div>
+
+    <landing-ddl-stage label="Old run · table format · project portfolio" width="full">
+      <landing-checklist-board
+        heading="Checklist làn L (old run)"
+        projectSlug="portfolio"
+        [(body)]="oldBody"
+        [lookup]="lookup"
+        [project]="project"
+      />
     </landing-ddl-stage>
   </landing-ddl-section>
 
@@ -69,12 +93,20 @@
         />
       </div>
       <div>
+        <h3 class="cl-pieces__label">task row · Claude mark, description and list</h3>
+        <landing-checklist-task-row density="compact" [task]="sampleTasks().claude" (action)="onPieceAction($event)" />
+      </div>
+      <div>
+        <h3 class="cl-pieces__label">task row · old run (text only)</h3>
+        <landing-checklist-task-row density="compact" [task]="sampleTasks().old" />
+      </div>
+      <div>
         <h3 class="cl-pieces__label">task row · dimmed by role filter (Manager)</h3>
         <landing-checklist-task-row density="compact" [task]="sampleTasks().noted" role="Manager" />
       </div>
       @if (sampleGroup(); as group) {
         <div>
-          <h3 class="cl-pieces__label">group · title with count, children behind a guide line</h3>
+          <h3 class="cl-pieces__label">group · SN, title with count, description, children behind a guide line</h3>
           <landing-checklist-group-row density="compact" [group]="group" (action)="onPieceAction($event)" />
         </div>
       }
@@ -108,6 +140,11 @@
         <strong>Shared rules:</strong> the × marks a task skipped, which counts as complete but leaves the checkbox
         empty; the undo icon returns it to todo. The role filter dims rows whose Do and Check both leave the role out,
         it never hides them. A ref chip opens its section in the panel, read-only, with the file to edit it in.
+      </p>
+      <p>
+        <strong>Source:</strong> the lanes and the lookup table come from the ctx plugin repo. The docs list refreshes
+        itself every 10 minutes, and <strong>Update checklist</strong> on the templates page reads the repo at once. A
+        run keeps the copy it was made from.
       </p>
       <p>
         <strong>Work vs edit:</strong> ticking, skipping and notes are always on, since they are the work. Structure

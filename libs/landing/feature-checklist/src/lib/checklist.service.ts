@@ -6,6 +6,7 @@ import type {
   ChecklistDocDetail,
   ChecklistDocKind,
   ChecklistDocSummary,
+  ChecklistRefreshResult,
   ChecklistRunBody,
   ChecklistRunDetail,
   ChecklistRunSummary,
@@ -30,9 +31,16 @@ export class ChecklistService {
     return this.http.get<ChecklistDocSummary[]>(`${CHECKLIST_API_PREFIX}/docs`, { params: { kind } });
   }
 
+  /** Read the lanes and the lookup table from the plugin repo now. Fails with the reason, and the current docs stay. */
+  refreshDocs(): Observable<ChecklistRefreshResult> {
+    return this.http.post<ChecklistRefreshResult>(`${CHECKLIST_API_PREFIX}/refresh`, {});
+  }
+
   /** Archived docs too, so an older run still opens its references. */
   getDoc(kind: ChecklistDocKind, slug: string): Observable<ChecklistDocDetail> {
-    return this.http.get<ChecklistDocDetail>(`${CHECKLIST_API_PREFIX}/docs/${kind.toLowerCase()}/${slug}`);
+    return this.http.get<ChecklistDocDetail>(
+      `${CHECKLIST_API_PREFIX}/docs/${kind.toLowerCase()}/${encodeURIComponent(slug)}`
+    );
   }
 
   /** Most recently updated first. */
